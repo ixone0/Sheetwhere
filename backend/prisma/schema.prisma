@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+  output = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL") // ตรวจสอบให้แน่ใจว่ามีใน .env แล้ว
+}
+
+model User {
+  id        String    @id @default(cuid())
+  name      String
+  email     String    @unique
+  password  String?
+  image     String?
+  isAdmin   Boolean   @default(false)
+  posts     Post[]
+  comments  Comment[]
+  reports   Report[]  // รายงานที่ผู้ใช้นี้เป็นคนส่ง
+  createdAt DateTime  @default(now())
+}
+
+model Post {
+  id          String    @id @default(cuid())
+  title       String
+  Description String
+  fileUrl     String?
+  tags        Tag[]     @relation("PostTags") // many-to-many
+  authorId    String
+  author      User      @relation(fields: [authorId], references: [id])
+  comments    Comment[]
+  reports     Report[]  // รายงานที่เกี่ยวข้องกับโพสต์นี้
+  createdAt   DateTime  @default(now())
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id])
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Tag {
+  id    String  @id @default(cuid())
+  name  String  @unique
+  posts Post[]  @relation("PostTags") // many-to-many
+}
+
+model Report {
+  id          String   @id @default(cuid())
+  reason      String
+  postId      String
+  post        Post     @relation(fields: [postId], references: [id])
+  reporterId  String
+  reporter    User     @relation(fields: [reporterId], references: [id])
+  createdAt   DateTime @default(now())
+}
