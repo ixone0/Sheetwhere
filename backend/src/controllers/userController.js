@@ -70,6 +70,7 @@ const loginUser = async (req, res) => {
 
 const getUserById = async (req, res) => {
     const { id } = req.params;
+    console.log('Fetching user with ID:', id); // Debugging line
   
     try {
       const user = await prismaClient.user.findUnique({
@@ -107,9 +108,65 @@ const savePost = async (req, res) => {
     }
 };
 
+const getSavedPosts = async (req, res) => {
+    const { userId } = req.params;
+  
+    try {
+      const user = await prismaClient.user.findUnique({
+        where: { id: userId },
+        include: { savedPosts: true },
+      });
+  
+      if (!user) {
+        return res.status(404).json({ error: 'User not found.' });
+      }
+  
+      res.status(200).json(user.savedPosts);
+    } catch (error) {
+      console.error('Error fetching saved posts:', error);
+      res.status(500).json({ error: 'Error fetching saved posts.' });
+    }
+};
+const getUserPosts = async (req, res) => {
+    const { userId } = req.params;
+  
+    try {
+      const posts = await prisma.post.findMany({
+        where: { authorId: userId },
+      });
+      res.status(200).json(posts);
+    } catch (error) {
+      console.error('Error fetching user posts:', error);
+      res.status(500).json({ error: 'Error fetching user posts.' });
+    }
+  };
+  
+  const getUserSavedPosts = async (req, res) => {
+    const { userId } = req.params;
+  
+    try {
+      const savedPosts = await prisma.user.findUnique({
+        where: { id: userId },
+        include: { savedPosts: true },
+      });
+  
+      if (!savedPosts) {
+        return res.status(404).json({ error: 'User not found.' });
+      }
+  
+      res.status(200).json(savedPosts.savedPosts);
+    } catch (error) {
+      console.error('Error fetching saved posts:', error);
+      res.status(500).json({ error: 'Error fetching saved posts.' });
+    }
+};
+  
 module.exports = { 
     registerUser, 
     getUserById,
     loginUser,
     savePost,
+    getSavedPosts,
+    getUserPosts,
+    getUserSavedPosts,
 };

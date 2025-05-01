@@ -110,7 +110,7 @@ function Home() {
         {posts.map((post) => (
           <div key={post.id} className="post">
             <img src={post.fileUrl || 'placeholder.png'} alt="Post" />
-            <p>{post.title}fddhfh</p>
+            <p>{post.title}</p>
           </div>
         ))}
       </div>
