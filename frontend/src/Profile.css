@@ -1,0 +1,93 @@
+.profile {
+    padding: 20px;
+}
+
+.top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: bold;
+    color: #f0ad4e;
+    cursor: pointer;
+}
+
+.logo:hover {
+    text-decoration: underline;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 20px 0;
+}
+
+.profile-picture img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+}
+
+.profile-actions button {
+    margin-left: 10px;
+    padding: 8px;
+    background-color: #f0ad4e;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+}
+
+.profile-actions button:hover {
+    background-color: #ec971f;
+}
+
+.tabs {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.tabs button {
+    margin: 0 10px;
+    padding: 10px 20px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.tabs button.active {
+    background-color: #f0ad4e;
+    color: white;
+}
+
+.content {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.post {
+    text-align: center;
+}
+
+.post img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+.post p {
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: bold;
+}

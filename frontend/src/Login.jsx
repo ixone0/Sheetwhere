@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function Login() {
   const [emailOrName, setEmailOrName] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -14,7 +16,12 @@ function Login() {
         emailOrName,
         password,
       });
-      setMessage(response.data.message);
+
+      // Save user identity in localStorage
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+
+      // Redirect to Home page
+      navigate('/');
     } catch (error) {
       setMessage(error.response?.data?.error || 'Login failed.');
     }

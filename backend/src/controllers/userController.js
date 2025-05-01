@@ -68,7 +68,48 @@ const loginUser = async (req, res) => {
     }
 };
 
+const getUserById = async (req, res) => {
+    const { id } = req.params;
+  
+    try {
+      const user = await prismaClient.user.findUnique({
+        where: { id },
+      });
+  
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+      res.status(200).json(user);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+const savePost = async (req, res) => {
+    const { userId, postId } = req.body;
+
+    try {
+        const user = await prismaClient.user.update({
+        where: { id: userId },
+        data: {
+            savedPosts: {
+            connect: { id: postId },
+            },
+        },
+        });
+
+        res.status(200).json({ message: 'Post saved successfully.', user });
+    } catch (error) {
+        console.error('Error saving post:', error);
+        res.status(500).json({ error: 'Error saving post.' });
+    }
+};
+
 module.exports = { 
-    registerUser,
+    registerUser, 
+    getUserById,
     loginUser,
+    savePost,
 };
