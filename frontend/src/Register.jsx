@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import './Register.css';
+import { Link } from 'react-router-dom';
 
 function Register() {
   const [email, setEmail] = useState('');
@@ -27,32 +29,37 @@ function Register() {
 
   return (
     <div className="register-container">
-      <h1>Register</h1>
-      <form onSubmit={handleRegister}>
-        <input
-          type="email"
-          placeholder="Example@dome.tu.ac.th"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Confirm Password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Register</button>
-      </form>
-      {message && <p>{message}</p>}
+      <div className="register-wrapper">
+        <h1>Register</h1>
+        <form onSubmit={handleRegister}>
+          <input
+            type="email"
+            placeholder="Example@dome.tu.ac.th"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Confirm password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
+          <button type="submit">Register</button>
+        </form>
+        {message && <p>{message}</p>}
+        <div className="login-link">
+          Already have an account? <Link to="/login">Login</Link>
+        </div>
+      </div>
     </div>
   );
 }
