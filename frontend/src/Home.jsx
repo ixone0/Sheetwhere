@@ -91,7 +91,9 @@ function Home() {
             </option>
           ))}
         </select>
-        <button onClick={handleProfileClick}>Profile</button>
+        <button onClick={handleProfileClick}>
+          {user ? 'Profile' : 'Login'}
+        </button>
         {user && (
           <button
             onClick={() => {

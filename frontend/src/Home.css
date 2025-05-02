@@ -51,6 +51,9 @@
     background-color: #ec971f;
 }
 
+.top-bar button:last-child {
+    margin-left: 10px; /* Add space between Profile and Logout buttons */
+}
 .posts {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

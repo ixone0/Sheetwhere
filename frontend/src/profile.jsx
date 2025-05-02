@@ -65,7 +65,20 @@ function Profile() {
         <span className="logo" onClick={() => navigate('/')}>
           Sheetwhere
         </span>
-        <button onClick={() => navigate(`/profile/${id}`)}>Profile</button>
+        <div className="right-buttons">
+          <button onClick={() => navigate(`/profile/${id}`)}>Profile</button>
+          {user && (
+            <button
+              onClick={() => {
+                localStorage.removeItem('user'); // Logout
+                setUser(null); // Clear user state
+                navigate('/login'); // Redirect to login
+              }}
+            >
+              Logout
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Profile Section */}
