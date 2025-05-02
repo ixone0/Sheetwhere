@@ -5,6 +5,7 @@
     justify-content: center;
     min-height: 100vh;
     background-color: #f5f5f5;
+    position: relative;
 }
 
 .register-wrapper {
@@ -19,6 +20,7 @@
     border: 2px solid #ffa162;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1),
                 0 0 0 4px rgba(255, 161, 98, 0.1);
+    position: relative;
 }
 
 .register-container h1 {
@@ -41,11 +43,13 @@
     font-size: 1rem;
     width: 100%;
     box-sizing: border-box;
+    cursor: text;
 }
 
 .register-container input:focus {
     outline: none;
     border-color: #ff6b35;
+    box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
 }
 
 .register-container button {
@@ -63,6 +67,10 @@
     background-color: #ff6b35;
 }
 
+.register-container button:active {
+    transform: scale(0.98);
+}
+
 .register-container p {
     color: #ff6b35;
     margin-top: 1rem;
@@ -78,8 +86,29 @@
 .login-link a {
     color: #ff6b35;
     text-decoration: none;
+    cursor: pointer;
 }
 
 .login-link a:hover {
     text-decoration: underline;
+}
+
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.back-button .stroke-current {
+    stroke: #ff6b35;
+}
+
+.back-button:hover {
+    transform: scale(1.1);
 }
