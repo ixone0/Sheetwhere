@@ -256,6 +256,26 @@ const deleteComment = async (req, res) => {
   }
 };
 
+const reportPost = async (req, res) => {
+  const { postId, userId, reason, details } = req.body;
+
+  try {
+    const report = await prisma.report.create({
+      data: {
+        postId,
+        reporterId: userId,
+        reason,
+        details,
+      },
+    });
+
+    res.status(201).json({ message: 'Report submitted successfully.', report });
+  } catch (error) {
+    console.error('Error reporting post:', error);
+    res.status(500).json({ error: 'Error reporting post.' });
+  }
+};
+
 module.exports = {
   getTags,
   getPosts,
@@ -269,4 +289,5 @@ module.exports = {
   unsavePost,
   addComment,
   deleteComment,
+  reportPost,
 };

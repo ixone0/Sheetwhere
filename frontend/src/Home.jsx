@@ -95,6 +95,13 @@ function Home() {
         <button onClick={handleProfileClick}>
           {user ? 'Profile' : 'Login'}
         </button>
+        {user && user.isAdmin && (
+          <button
+            onClick={() => navigate('/admin')} // Redirect to admin page
+          >
+            Admin
+          </button>
+        )}
         {user && (
           <button
             onClick={() => {
@@ -116,7 +123,7 @@ function Home() {
             <p>{post.title}</p>
           </Link>
         ))}
-    </div>
+      </div>
     </div>
   );
 }

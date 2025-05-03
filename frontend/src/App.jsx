@@ -6,6 +6,7 @@ import Register from './Register';
 import Login from './Login';
 import Profile from './profile';
 import Post from './Post';
+import Admin from './Admin';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/posts/:id" element={<Post />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       </div>
     </Router>

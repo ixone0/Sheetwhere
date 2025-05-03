@@ -25,14 +25,14 @@ model User {
 model Post {
   id          String    @id @default(cuid())
   title       String
-  description String    // เปลี่ยนจาก Description เป็น description
+  description String
   fileUrls    String[]
-  tags        Tag[]     @relation("PostTags") // many-to-many
+  tags        Tag[]     @relation("PostTags")
   authorId    String
   author      User      @relation("UserPosts", fields: [authorId], references: [id])
   comments    Comment[]
-  reports     Report[]  // Reports related to this post
-  savedBy     User[]    @relation("SavedPosts") // Users who saved this post
+  reports     Report[]
+  savedBy     User[]    @relation("SavedPosts")
   createdAt   DateTime  @default(now())
 }
 
@@ -40,7 +40,7 @@ model Comment {
   id        String   @id @default(cuid())
   content   String
   postId    String
-  post      Post     @relation(fields: [postId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   authorId  String
   author    User     @relation(fields: [authorId], references: [id])
   createdAt DateTime @default(now())
@@ -56,8 +56,9 @@ model Report {
   id          String   @id @default(cuid())
   reason      String
   postId      String
-  post        Post     @relation(fields: [postId], references: [id])
+  post        Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   reporterId  String
   reporter    User     @relation(fields: [reporterId], references: [id])
+  details     String?
   createdAt   DateTime @default(now())
 }

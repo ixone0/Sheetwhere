@@ -16,5 +16,6 @@ router.post('/posts/:id/comments', homeController.addComment);
 router.delete('/comments', homeController.deleteComment);
 router.get('/is-post-saved', homeController.isPostSaved);
 router.post('/unsave-post', homeController.unsavePost);
+router.post('/report-post', homeController.reportPost);
 
 module.exports = router;

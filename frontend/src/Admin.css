@@ -1,0 +1,47 @@
+.admin {
+    padding: 20px;
+  }
+  
+  .admin h1 {
+    margin-bottom: 20px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  th {
+    background-color: #f4f4f4;
+  }
+  
+  img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 5px;
+  }
+  
+  button {
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .approve-button {
+    background-color: green;
+    color: white;
+    margin-right: 5px;
+  }
+  
+  .reject-button {
+    background-color: red;
+    color: white;
+  }
