@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Home.css';
+import { Link } from 'react-router-dom';
 
 function Home() {
   const navigate = useNavigate();
@@ -110,12 +111,12 @@ function Home() {
       {/* Posts Section */}
       <div className="posts">
         {posts.map((post) => (
-          <div key={post.id} className="post">
-            <img src={post.fileUrl || 'placeholder.png'} alt="Post" />
+          <Link to={`/posts/${post.id}`} key={post.id} className="post">
+            <img src={post.fileUrls[0] || 'placeholder.png'} alt="Post" />
             <p>{post.title}</p>
-          </div>
+          </Link>
         ))}
-      </div>
+    </div>
     </div>
   );
 }

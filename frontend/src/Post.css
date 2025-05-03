@@ -1,0 +1,96 @@
+.post-detail {
+    padding: 20px;
+}
+  
+.back-button {
+    font-size: 20px;
+    cursor: pointer;
+}
+  
+.post-images img {
+    width: 100%;
+    max-width: 500px;
+    margin-bottom: 10px;
+}
+  
+.save-button {
+    background-color: orange;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+  
+.comments-section {
+    margin-top: 20px;
+}
+  
+.comments p {
+    background-color: #f0f0f0;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+}
+  
+.comments input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+}
+  
+.comments button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: orange;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.post-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* ระยะห่างระหว่างรูปภาพ */
+    justify-content: center;
+}
+
+.post-images img {
+    width: 300px; /* กำหนดความกว้างคงที่ */
+    height: 300px; /* กำหนดความสูงคงที่ */
+    object-fit: cover; /* ตัดส่วนเกินของรูปภาพเพื่อให้พอดีกับกรอบ */
+    border-radius: 10px; /* เพิ่มความโค้งมนให้กับรูปภาพ */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* เพิ่มเงาให้รูปภาพ */
+}
+
+.comment {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f9f9f9;
+  padding: 10px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+}
+
+.comment button {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.comment button:hover {
+  background-color: darkred;
+}
+
+.comment p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.comment p strong {
+  color: #333;
+  margin-right: 5px;
+}

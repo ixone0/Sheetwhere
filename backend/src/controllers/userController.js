@@ -1,7 +1,6 @@
-const prisma = require('@prisma/client').PrismaClient;
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 const bcrypt = require('bcrypt');
-
-const prismaClient = new prisma();
 
 const registerUser = async (req, res) => {
     const { email, password, confirmPassword } = req.body;
@@ -11,7 +10,7 @@ const registerUser = async (req, res) => {
         return res.status(400).json({ error: 'Email must use @dome.tu.ac.th domain.' });
     }
 
-    // Validate password match
+    // Validateฆ password match
     if (password !== confirmPassword) {
         return res.status(400).json({ error: 'Passwords do not match.' });
     }
@@ -24,7 +23,7 @@ const registerUser = async (req, res) => {
         const name = email.split('@')[0];
 
         // Create user in the database
-        const newUser = await prismaClient.user.create({
+        const newUser = await prisma.user.create({
         data: {
             email,
             password: hashedPassword,
@@ -43,7 +42,7 @@ const loginUser = async (req, res) => {
 
     try {
         // Find user by email or name
-        const user = await prismaClient.user.findFirst({
+        const user = await prisma.user.findFirst({
         where: {
             OR: [
             { email: emailOrName },
@@ -73,7 +72,7 @@ const getUserById = async (req, res) => {
     console.log('Fetching user with ID:', id); // Debugging line
   
     try {
-      const user = await prismaClient.user.findUnique({
+      const user = await prisma.user.findUnique({
         where: { id },
       });
   
@@ -92,7 +91,7 @@ const savePost = async (req, res) => {
     const { userId, postId } = req.body;
 
     try {
-        const user = await prismaClient.user.update({
+        const user = await prisma.user.update({
         where: { id: userId },
         data: {
             savedPosts: {
@@ -109,40 +108,46 @@ const savePost = async (req, res) => {
 };
 
 const getSavedPosts = async (req, res) => {
-    const { userId } = req.params;
-  
-    try {
-      const user = await prismaClient.user.findUnique({
-        where: { id: userId },
-        include: { savedPosts: true },
-      });
-  
-      if (!user) {
-        return res.status(404).json({ error: 'User not found.' });
-      }
-  
-      res.status(200).json(user.savedPosts);
-    } catch (error) {
-      console.error('Error fetching saved posts:', error);
-      res.status(500).json({ error: 'Error fetching saved posts.' });
+  const { id } = req.params;
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id },
+      include: {
+        savedPosts: true, // ดึงโพสต์ที่บันทึกไว้
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
     }
+
+    res.status(200).json(user.savedPosts);
+  } catch (error) {
+    console.error('Error fetching saved posts:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 };
+
 const getUserPosts = async (req, res) => {
-    const { userId } = req.params;
-  
-    try {
-      const posts = await prisma.post.findMany({
-        where: { authorId: userId },
-      });
-      res.status(200).json(posts);
-    } catch (error) {
+  const { userId } = req.params;
+
+  try {
+    const posts = await prisma.post.findMany({
+      where: { authorId: userId },
+      include: {
+        tags: true, // รวมแท็กที่เกี่ยวข้อง
+      },
+    });
+    res.status(200).json(posts);
+  } catch (error) {
       console.error('Error fetching user posts:', error);
       res.status(500).json({ error: 'Error fetching user posts.' });
     }
-  };
+};
   
-  const getUserSavedPosts = async (req, res) => {
-    const { userId } = req.params;
+const getUserSavedPosts = async (req, res) => {
+  const { userId } = req.params;
   
     try {
       const savedPosts = await prisma.user.findUnique({

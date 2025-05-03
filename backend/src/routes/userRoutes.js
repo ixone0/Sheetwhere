@@ -8,5 +8,6 @@ router.get('/profile/:id', userController.getUserById);
 router.post('/save-post', userController.savePost);
 router.get('/saved/:userId', userController.getSavedPosts);
 router.get('/posts/:userId', userController.getUserPosts);
+router.get('/saved-posts/:id', userController.getSavedPosts);
 
 module.exports = router;
