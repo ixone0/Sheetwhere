@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const prisma = require('../prismaClient');
 
 // ดึงข้อมูลโพสต์ที่ถูกรายงาน
@@ -36,11 +38,33 @@ const deletePost = async (req, res) => {
   const { postId } = req.body;
 
   try {
+    // ดึงข้อมูลโพสต์ที่ต้องการลบ
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+    });
+
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found.' });
+    }
+
+    // ลบไฟล์รูปภาพในโฟลเดอร์ uploads
+    post.fileUrls.forEach((fileUrl) => {
+      const filePath = path.join(__dirname, '../uploads', path.basename(fileUrl));
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          console.error(`Error deleting file: ${filePath}`, err);
+        } else {
+          console.log(`File deleted: ${filePath}`);
+        }
+      });
+    });
+
+    // ลบโพสต์ในฐานข้อมูล
     await prisma.post.delete({
       where: { id: postId },
     });
 
-    res.status(200).json({ message: 'Post deleted successfully.' });
+    res.status(200).json({ message: 'Post and associated images deleted successfully.' });
   } catch (error) {
     console.error('Error deleting post:', error);
     res.status(500).json({ error: 'Error deleting post.' });

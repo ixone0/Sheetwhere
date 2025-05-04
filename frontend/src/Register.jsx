@@ -10,9 +10,6 @@ function Register() {
   const [message, setMessage] = useState('');
 
   const handleRegister = async (e) => {
-    console.log("email", email);
-    console.log("password", password);
-    console.log("confirmPassword", confirmPassword);
     e.preventDefault();
 
     try {

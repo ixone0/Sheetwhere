@@ -2,6 +2,7 @@
 const prisma = require('../prismaClient');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 
 // กำหนดที่จัดเก็บไฟล์
 const storage = multer.diskStorage({
@@ -46,14 +47,12 @@ const getTags = async (req, res) => {
     const tags = await prisma.tag.findMany();
     res.status(200).json(tags);
   } catch (error) {
-    console.error('Error fetching tags:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 }
 
 const getPosts = async (req, res) => {
   const { search, tag } = req.query;
-
   try {
     const posts = await prisma.post.findMany({
       where: {
@@ -89,7 +88,7 @@ const createPost = async (req, res) => {
       data: {
         title,
         description,
-        fileUrls: { set: fileUrls }, // Save multiple file URLs
+        fileUrls: { set: fileUrls },
         authorId,
         tags: {
           connectOrCreate: tags.split(',').map((tag) => ({
@@ -276,6 +275,100 @@ const reportPost = async (req, res) => {
   }
 };
 
+const updatePost = async (req, res) => {
+  const { id } = req.params;
+  const { title, description, fileUrls } = req.body;
+
+  try {
+    // ดึงโพสต์ปัจจุบันจากฐานข้อมูล
+    const existingPost = await prisma.post.findUnique({
+      where: { id },
+    });
+
+    if (!existingPost) {
+      return res.status(404).json({ error: 'Post not found.' });
+    }
+
+    // ตรวจสอบรูปภาพที่ถูกลบ
+    const deletedImages = existingPost.fileUrls.filter((url) => !fileUrls.includes(url));
+
+    // ลบไฟล์รูปภาพที่ถูกลบออกจาก fileUrls
+    deletedImages.forEach((fileUrl) => {
+      const filePath = path.join(__dirname, '../uploads', path.basename(fileUrl));
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          console.error(`Error deleting file: ${filePath}`, err);
+        } else {
+          console.log(`File deleted: ${filePath}`);
+        }
+      });
+    });
+
+    // อัปเดตโพสต์ในฐานข้อมูล
+    const post = await prisma.post.update({
+      where: { id },
+      data: {
+        title,
+        description,
+        fileUrls: { set: fileUrls }, // อัปเดตรูปภาพใหม่
+      },
+    });
+
+    res.status(200).json({ message: 'Post updated successfully.', post });
+  } catch (error) {
+    console.error('Error updating post:', error);
+    res.status(500).json({ error: 'Error updating post.' });
+  }
+};
+
+const deletePost = async (req, res) => {
+  const { id } = req.params;
+  const { userId } = req.body;
+
+  try {
+    const post = await prisma.post.findUnique({
+      where: { id },
+    });
+
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found.' });
+    }
+
+    // ตรวจสอบสิทธิ์การลบ (เจ้าของโพสต์หรือแอดมิน)
+    const isOwner = post.authorId === userId;
+    const isAdmin = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { isAdmin: true },
+    });
+
+    if (!isOwner && !isAdmin?.isAdmin) {
+      return res.status(403).json({ error: 'You do not have permission to delete this post.' });
+    }
+
+    // ลบไฟล์รูปภาพในโฟลเดอร์ uploads
+    post.fileUrls.forEach((fileUrl) => {
+      const filePath = path.join(__dirname, '../uploads', path.basename(fileUrl));
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          console.error(`Error deleting file: ${filePath}`, err);
+        } else {
+          console.log(`File deleted: ${filePath}`);
+        }
+      });
+    });
+
+    // ลบโพสต์ในฐานข้อมูล
+    await prisma.post.delete({
+      where: { id },
+    });
+
+    res.status(200).json({ message: 'Post and associated images deleted successfully.' });
+  } catch (error) {
+    console.error('Error deleting post:', error);
+    res.status(500).json({ error: 'Error deleting post.' });
+  }
+};
+
 module.exports = {
   getTags,
   getPosts,
@@ -290,4 +383,6 @@ module.exports = {
   addComment,
   deleteComment,
   reportPost,
+  updatePost,
+  deletePost,
 };

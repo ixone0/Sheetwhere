@@ -12,12 +12,12 @@ function Admin() {
       try {
         const storedUser = JSON.parse(localStorage.getItem('user'));
         if (!storedUser || !storedUser.isAdmin) {
-          navigate('/login'); // เปลี่ยนเส้นทางไปหน้า Login
+          navigate('/login');
           return;
         }
       } catch (error) {
         console.error('Error checking admin status:', error);
-        navigate('/login'); // เปลี่ยนเส้นทางไปหน้า Login หากเกิดข้อผิดพลาด
+        navigate('/login');
       }
     };
 
@@ -27,10 +27,10 @@ function Admin() {
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const storedUser = JSON.parse(localStorage.getItem('user')); // เพิ่มการดึง storedUser
+        const storedUser = JSON.parse(localStorage.getItem('user'));
         const response = await axios.get('http://localhost:5000/api/admin/reported-posts', {
           headers: {
-            'user-id': storedUser.id, // ส่ง userId ใน headers
+            'user-id': storedUser.id,
           },
         });
         setReports(response.data);
@@ -77,7 +77,7 @@ function Admin() {
   return (
     <div className="admin">
       <h1>Reported posts</h1>
-      <table>
+      <table className="admin-table">
         <thead>
           <tr>
             <th>Post</th>
@@ -88,27 +88,33 @@ function Admin() {
           </tr>
         </thead>
         <tbody>
-            {reports.map((report) => (
-                <tr key={report.id}>
-                <td>
-                    <img src={report.post.fileUrls[0] || 'placeholder.png'} alt="Post" />
-                </td>
-                <td>{report.reporter.name}</td>
-                <td>
-                    {report.reason}
-                    {report.details && ` - ${report.details}`} {/* แสดง details ถ้ามี */}
-                </td>
-                <td>{new Date(report.createdAt).toLocaleString()}</td>
-                <td>
-                    <button onClick={() => handleApprove(report.post.id)} className="approve-button">
-                    Approve
-                    </button>
-                    <button onClick={() => handleReject(report.id)} className="reject-button">
-                    Reject
-                    </button>
-                </td>
-                </tr>
-            ))}
+          {reports.map((report) => (
+            <tr key={report.id}>
+              <td>
+                <img src={report.post.fileUrls[0] || 'placeholder.png'} alt="Post" />
+              </td>
+              <td>{report.reporter.name}</td>
+              <td>
+                {report.reason}
+                {report.details && ` - ${report.details}`}
+              </td>
+              <td>{new Date(report.createdAt).toLocaleString()}</td>
+              <td>
+                <button
+                  onClick={() => handleApprove(report.post.id)}
+                  className="admin-button admin-approve-button"
+                >
+                  Approve
+                </button>
+                <button
+                  onClick={() => handleReject(report.id)}
+                  className="admin-button admin-reject-button"
+                >
+                  Reject
+                </button>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
