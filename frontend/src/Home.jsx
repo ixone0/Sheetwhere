@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import './Home.css';
-import { Link } from 'react-router-dom';
-import { BsFilter } from 'react-icons/bs';  // เพิ่ม import filter icon
+import NavigationBar from './components/NavigationBar';
 
 function Home() {
-  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [tags, setTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
   const [posts, setPosts] = useState([]);
   const [user, setUser] = useState(null);
   const [showFilter, setShowFilter] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
 
   // Check if user is logged in
   useEffect(() => {
@@ -36,40 +36,39 @@ function Home() {
     fetchTags();
   }, []);
 
-  // Fetch posts based on search query and selected tags
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        // สร้าง query parameters
-        const params = new URLSearchParams();
-        if (searchQuery) {
-          params.append('search', searchQuery);
-        }
-        if (selectedTags.length > 0) {
-          params.append('tags', selectedTags.join(','));
-        }
-
-        const response = await axios.get(`http://localhost:5000/api/home/posts?${params}`);
-        setPosts(response.data);
-      } catch (error) {
-        console.error('Error fetching posts:', error);
+  const fetchPosts = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const params = new URLSearchParams();
+      if (searchQuery) {
+        params.append('search', searchQuery);
       }
-    };
+      if (selectedTags.length > 0) {
+        params.append('tags', selectedTags.join(','));
+      }
 
-    fetchPosts();
+      const response = await axios.get(`http://localhost:5000/api/home/posts?${params}`);
+      setPosts(response.data);
+      setIsSearching(false);
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      setIsLoading(false);
+      setIsSearching(false);
+    }
   }, [searchQuery, selectedTags]);
 
-  const handleProfileClick = () => {
-    if (!user) {
-      navigate('/login');
-    } else {
-      navigate(`/profile/${user.id}`);
-    }
-  };
+  // Debounced search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery) {
+        setIsSearching(true);
+      }
+      fetchPosts();
+    }, 500);
 
-  const handleRefresh = () => {
-    window.location.reload();
-  };
+    return () => clearTimeout(timer);
+  }, [searchQuery, selectedTags, fetchPosts]);
 
   const toggleFilter = () => {
     setShowFilter(!showFilter);
@@ -79,54 +78,27 @@ function Home() {
   const term1Tags = tags.filter(tag => parseInt(tag.id) >= 1 && parseInt(tag.id) <= 6);
   const term2Tags = tags.filter(tag => parseInt(tag.id) >= 7 && parseInt(tag.id) <= 12);
 
+  // Skeleton loading component
+  const PostSkeleton = () => (
+    <div className="post skeleton">
+      <div className="skeleton-img"></div>
+      <div className="skeleton-text"></div>
+    </div>
+  );
+
   return (
     <div className="home">
-      {/* Top Bar */}
-      <div className="top-bar">
-        <span className="logo" onClick={handleRefresh}>
-          Sheetwhere
-        </span>
-        <div className="search-section">
-          <div className="search-container">
-            <input
-              type="text"
-              placeholder="Search by title or tags"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button className="filter-button" onClick={toggleFilter}>
-              <BsFilter size={20} />
-            </button>
-          </div>
-          {selectedTags.length > 0 && (
-            <div className="selected-tags">
-              {selectedTags.map((tag) => (
-                <span key={tag} className="selected-tag">
-                  {tag}
-                  <button onClick={() => setSelectedTags(selectedTags.filter(t => t !== tag))}>×</button>
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-        <button onClick={handleProfileClick}>
-          {user ? 'Profile' : 'Login'}
-        </button>
-        {user && user.isAdmin && (
-          <button onClick={() => navigate('/admin')}>Admin</button>
-        )}
-        {user && (
-          <button
-            onClick={() => {
-              localStorage.removeItem('user');
-              setUser(null);
-              navigate('/login');
-            }}
-          >
-            Logout
-          </button>
-        )}
-      </div>
+      <NavigationBar 
+        user={user}
+        setUser={setUser}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        selectedTags={selectedTags}
+        setSelectedTags={setSelectedTags}
+        isSearching={isSearching}
+        showFilter={showFilter}
+        toggleFilter={toggleFilter}
+      />
 
       {/* Filter Modal */}
       {showFilter && (
@@ -177,6 +149,7 @@ function Home() {
               </div>
             </div>
             <div className="filter-actions">
+              <button onClick={() => setSelectedTags([])}>Clear All</button>
               <button onClick={() => setShowFilter(false)}>Done</button>
             </div>
           </div>
@@ -185,12 +158,22 @@ function Home() {
 
       {/* Posts Section */}
       <div className="posts">
-        {posts.map((post) => (
-          <Link to={`/posts/${post.id}`} key={post.id} className="post">
-            <img src={post.fileUrls[0] || 'placeholder.png'} alt="Post" />
-            <p>{post.title}</p>
-          </Link>
-        ))}
+        {isLoading ? (
+          // Show skeletons while loading
+          Array(8).fill(null).map((_, index) => <PostSkeleton key={index} />)
+        ) : posts.length > 0 ? (
+          posts.map((post) => (
+            <Link to={`/posts/${post.id}`} key={post.id} className="post">
+              <img src={post.fileUrls[0] || 'placeholder.png'} alt="Post" />
+              <p>{post.title}</p>
+            </Link>
+          ))
+        ) : (
+          <div className="no-results">
+            <h3>No posts found</h3>
+            <p>Try adjusting your search or filters</p>
+          </div>
+        )}
       </div>
     </div>
   );

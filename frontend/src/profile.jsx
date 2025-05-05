@@ -4,66 +4,65 @@ import axios from 'axios';
 import './Profile.css';
 
 function Profile() {
-  const { id } = useParams(); // Get the user ID from the URL
+  const { userId } = useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [savedPosts, setSavedPosts] = useState([]);
-  const [tags, setTags] = useState([]); // State for tags
-  const [activeTab, setActiveTab] = useState('posts'); // 'posts' or 'saved'
-  const [showAddPostForm, setShowAddPostForm] = useState(false); // Toggle Add Post form
-  const [showDropdown, setShowDropdown] = useState(false); 
+  const [tags, setTags] = useState([]);
+  const [activeTab, setActiveTab] = useState('posts');
+  const [showAddPostForm, setShowAddPostForm] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   const [newPost, setNewPost] = useState({
     title: '',
     tags: '',
     description: '',
     fileUrls: [],
   });
+  const [loading, setLoading] = useState(true);
 
-  // Fetch user data based on the ID
+  // Check logged in user first
   useEffect(() => {
-    const fetchUser = async () => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      setCurrentUser(parsedUser);
+    } else {
+      navigate('/login');
+    }
+  }, [navigate]);
+
+  // Fetch profile data
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (!userId) return;
+
       try {
-        const response = await axios.get(`http://localhost:5000/api/user/profile/${id}`);
-        setUser(response.data);
+        // Fetch user profile
+        const userResponse = await axios.get(`http://localhost:5000/api/user/profile/${userId}`);
+        setUser(userResponse.data);
+
+        // Fetch user posts
+        const postsResponse = await axios.get(`http://localhost:5000/api/user/posts/${userId}`);
+        setPosts(postsResponse.data);
+
+        // Fetch saved posts
+        const savedResponse = await axios.get(`http://localhost:5000/api/user/saved-posts/${userId}`);
+        setSavedPosts(savedResponse.data);
+
+        setLoading(false);
       } catch (error) {
-        console.error('Error fetching user data:', error);
-        navigate('/login'); // Redirect to login if user not found
-      }
-    };
-
-    fetchUser();
-  }, [id, navigate]);
-
-  // Fetch user's posts
-  useEffect(() => {
-    const fetchPosts = async () => {
-      if (user) {
-        try {
-          const response = await axios.get(`http://localhost:5000/api/user/posts/${id}`);
-          setPosts(response.data);
-        } catch (error) {
-          console.error('Error fetching user posts:', error);
+        console.error('Error fetching profile data:', error);
+        setLoading(false);
+        if (error.response?.status === 404) {
+          navigate('/');
         }
       }
     };
 
-    fetchPosts();
-  }, [user, id]);
-
-  // Fetch saved posts
-  useEffect(() => {
-    const fetchSavedPosts = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5000/api/user/saved-posts/${id}`);
-        setSavedPosts(response.data);
-      } catch (error) {
-        console.error('Error fetching saved posts:', error);
-      }
-    };
-
-    fetchSavedPosts();
-  }, [id]);
+    fetchProfileData();
+  }, [userId, navigate]);
 
   // Fetch tags from backend
   useEffect(() => {
@@ -135,7 +134,7 @@ function Profile() {
     formData.append('image', file);
 
     try {
-      const response = await axios.post(`http://localhost:5000/api/user/upload-profile-image/${id}`, formData, {
+      const response = await axios.post(`http://localhost:5000/api/user/upload-profile-image/${userId}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setUser({ ...user, image: response.data.imageUrl }); // Update profile image in state
@@ -151,7 +150,7 @@ function Profile() {
     if (!confirmDelete) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/user/delete-account/${id}`);
+      await axios.delete(`http://localhost:5000/api/user/delete-account/${userId}`);
       alert('Account deleted successfully.');
       localStorage.removeItem('user'); // ลบข้อมูลผู้ใช้ใน localStorage
       navigate('/'); // เปลี่ยนเส้นทางไปยังหน้าแรก
@@ -169,7 +168,7 @@ function Profile() {
           Sheetwhere
         </span>
         <div className="right-buttons">
-          <button onClick={() => navigate(`/profile/${id}`)}>Profile</button>
+          <button onClick={() => navigate(`/profile/${userId}`)}>Profile</button>
           {user && (
             <button
               onClick={() => {
