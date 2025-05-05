@@ -52,11 +52,15 @@ const getTags = async (req, res) => {
 }
 
 const getPosts = async (req, res) => {
-  const { search, tag } = req.query;
+  const { search, tags } = req.query;
   try {
+    // แปลง tags string เป็น array (ถ้ามี)
+    const tagArray = tags ? tags.split(',').filter(Boolean) : [];
+
     const posts = await prisma.post.findMany({
       where: {
         AND: [
+          // เงื่อนไขการค้นหาด้วย search query
           search
             ? {
                 OR: [
@@ -65,7 +69,18 @@ const getPosts = async (req, res) => {
                 ],
               }
             : {},
-          tag ? { tags: { some: { name: tag } } } : {},
+          // เงื่อนไขการกรองด้วย tags แบบ OR
+          tagArray.length > 0
+            ? {
+                tags: {
+                  some: {
+                    name: {
+                      in: tagArray // ใช้ in จะทำให้เป็นเงื่อนไข OR โดยอัตโนมัติ
+                    }
+                  }
+                }
+              }
+            : {},
         ],
       },
       include: {
