@@ -1,6 +1,8 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const bcrypt = require('bcrypt');
+const path = require('path');
+const fs = require('fs');
 
 const registerUser = async (req, res) => {
     const { email, password, confirmPassword } = req.body;
@@ -165,6 +167,98 @@ const getUserSavedPosts = async (req, res) => {
       res.status(500).json({ error: 'Error fetching saved posts.' });
     }
 };
+
+const uploadProfileImage = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // ดึงผู้ใช้ปัจจุบัน
+    const user = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    // ลบรูปโปรไฟล์เก่า (ถ้ามี)
+    if (user.image) {
+      const oldImagePath = path.join(__dirname, '../uploads', path.basename(user.image));
+      fs.unlink(oldImagePath, (err) => {
+        if (err) {
+          console.error(`Error deleting old profile image: ${oldImagePath}`, err);
+        }
+      });
+    }
+
+    // อัปเดตรูปโปรไฟล์ใหม่
+    const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: { image: imageUrl },
+    });
+
+    res.status(200).json({ message: 'Profile image updated successfully.', imageUrl });
+  } catch (error) {
+    console.error('Error uploading profile image:', error);
+    res.status(500).json({ error: 'Error uploading profile image.' });
+  }
+};
+
+const deleteAccount = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // ดึงข้อมูลผู้ใช้
+    const user = await prisma.user.findUnique({
+      where: { id },
+      include: {
+        posts: true, // ดึงโพสต์ทั้งหมดของผู้ใช้
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    // ลบรูปโปรไฟล์ (ถ้ามี)
+    if (user.image) {
+      const filePath = path.join(__dirname, '../uploads', path.basename(user.image));
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          console.error(`Error deleting profile image: ${filePath}`, err);
+        }
+      });
+    }
+
+    // ลบรูปภาพที่เกี่ยวข้องกับโพสต์ของผู้ใช้
+    user.posts.forEach((post) => {
+      post.fileUrls.forEach((fileUrl) => {
+        const filePath = path.join(__dirname, '../uploads', path.basename(fileUrl));
+        fs.unlink(filePath, (err) => {
+          if (err) {
+            console.error(`Error deleting post image: ${filePath}`, err);
+          }
+        });
+      });
+    });
+
+    // ลบโพสต์ทั้งหมดของผู้ใช้
+    await prisma.post.deleteMany({
+      where: { authorId: id },
+    });
+
+    // ลบผู้ใช้ในฐานข้อมูล
+    await prisma.user.delete({
+      where: { id },
+    });
+
+    res.status(200).json({ message: 'Account and associated posts deleted successfully.' });
+  } catch (error) {
+    console.error('Error deleting account:', error);
+    res.status(500).json({ error: 'Error deleting account.' });
+  }
+};
   
 module.exports = { 
     registerUser, 
@@ -174,4 +268,6 @@ module.exports = {
     getSavedPosts,
     getUserPosts,
     getUserSavedPosts,
+    uploadProfileImage,
+    deleteAccount,
 };

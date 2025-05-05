@@ -12,6 +12,7 @@ function Profile() {
   const [tags, setTags] = useState([]); // State for tags
   const [activeTab, setActiveTab] = useState('posts'); // 'posts' or 'saved'
   const [showAddPostForm, setShowAddPostForm] = useState(false); // Toggle Add Post form
+  const [showDropdown, setShowDropdown] = useState(false); 
   const [newPost, setNewPost] = useState({
     title: '',
     tags: '',
@@ -121,6 +122,45 @@ function Profile() {
     }
   };
 
+  const handleProfileImageUpload = async (e) => {
+    const file = e.target.files[0];
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+
+    if (!allowedTypes.includes(file.type)) {
+      alert('Only image files (jpg, jpeg, png) are allowed.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const response = await axios.post(`http://localhost:5000/api/user/upload-profile-image/${id}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setUser({ ...user, image: response.data.imageUrl }); // Update profile image in state
+      alert('Profile image updated successfully!');
+    } catch (error) {
+      console.error('Error uploading profile image:', error);
+      alert('Failed to upload profile image.');
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    const confirmDelete = window.confirm('Are you sure you want to delete your account? This action cannot be undone.');
+    if (!confirmDelete) return;
+
+    try {
+      await axios.delete(`http://localhost:5000/api/user/delete-account/${id}`);
+      alert('Account deleted successfully.');
+      localStorage.removeItem('user'); // ลบข้อมูลผู้ใช้ใน localStorage
+      navigate('/'); // เปลี่ยนเส้นทางไปยังหน้าแรก
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      alert('Failed to delete account.');
+    }
+  };
+
   return (
     <div className="profile">
       {/* Top Bar */}
@@ -148,11 +188,30 @@ function Profile() {
       <div className="profile-header">
         <div className="profile-picture">
           <img src={user?.image || 'placeholder-profile.png'} alt="Profile" />
+          <input
+            type="file"
+            accept="image/*"
+            style={{ display: 'none' }} // ซ่อน input
+            onChange={handleProfileImageUpload} // เรียกฟังก์ชันอัปโหลดเมื่อเลือกไฟล์
+            id="profile-image-upload"
+          />
         </div>
         <h2>{user?.name || 'Name'}</h2>
         <div className="profile-actions">
           <button onClick={() => setShowAddPostForm(!showAddPostForm)}>+</button>
-          <button>⚙</button>
+          <div className="dropdown">
+            <button onClick={() => setShowDropdown(!showDropdown)}>⚙</button>
+            {showDropdown && (
+              <div className="dropdown-menu">
+                <button onClick={() => document.getElementById('profile-image-upload').click()}>
+                  Change Profile
+                </button>
+                <button onClick={handleDeleteAccount}>
+                  Delete Account
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
