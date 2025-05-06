@@ -321,116 +321,146 @@ function Post() {
             </div>
           </div>
         ) : (
-            <>
-            <div className="post-images">
-                {post.fileUrls.map((url, index) => (
-                <img key={index} src={url} alt={`Post ${index}`} onClick={() => openLightbox(index)} />
-                ))}
-            </div>
-            <h1>{post.title}</h1>
-            <p>{post.tags.map((tag) => `#${tag.name}`).join(' ')}</p>
-            <p>{post.description}</p>
-            <button onClick={handleSavePost} className="save-button">
-                {isSaved ? 'Unsave post' : 'Save post'}
-            </button>
-            <button onClick={() => setShowReportForm(true)} className="report-button">Report</button>
-            {isOwner && (
-                <>
-                <button onClick={handleEdit}>Edit</button>
-                <button onClick={handleDeletePost} className="delete-button">Delete</button>
-                </>
-            )}
-            </>
-        )}
-        {showReportForm && (
-            <div className="report-form">
-            <h2>Report post</h2>
-            <form onSubmit={handleReportSubmit}>
-                <div>
-                <label>
-                    <input
-                    type="checkbox"
-                    value="Spam"
-                    checked={reportReason === 'Spam'}
-                    onChange={() => setReportReason('Spam')}
-                    />
-                    Spam
-                </label>
+            <div className="post-content">
+                <div className="post-images">
+                    {post.fileUrls.map((url, index) => (
+                        <img key={index} src={url} alt={`Post ${index}`} onClick={() => openLightbox(index)} />
+                    ))}
                 </div>
-                <div>
-                <label>
-                    <input
-                    type="checkbox"
-                    value="Inappropriate Content"
-                    checked={reportReason === 'Inappropriate Content'}
-                    onChange={() => setReportReason('Inappropriate Content')}
-                    />
-                    Inappropriate Content
-                </label>
+                <h1>{post.title}</h1>
+                <div className="tags">
+                    {post.tags.map((tag) => `#${tag.name}`).join(' ')}
                 </div>
-                <div>
-                <label>
-                    <input
-                    type="checkbox"
-                    value="Misinformation"
-                    checked={reportReason === 'Misinformation'}
-                    onChange={() => setReportReason('Misinformation')}
-                    />
-                    Misinformation
-                </label>
-                </div>
-                <div>
-                <label>
-                    <input
-                    type="checkbox"
-                    value="Other"
-                    checked={reportReason === 'Other'}
-                    onChange={() => setReportReason('Other')}
-                    />
-                    Other
-                </label>
-                </div>
-                <textarea
-                placeholder="Add more details (Optional)"
-                value={additionalDetails}
-                onChange={(e) => setAdditionalDetails(e.target.value)}
-                />
-                <button type="submit">Submit</button>
-                <button type="button" onClick={() => setShowReportForm(false)}>Cancel</button>
-            </form>
-            </div>
-        )}
-        <div className="comments-section">
-            <h2>Comments</h2>
-            <div className="comments">
-            {comments.map((c) => {
-                const storedUser = JSON.parse(localStorage.getItem('user'));
-                const canDelete =
-                storedUser &&
-                (storedUser.id === c.authorId ||
-                    storedUser.id === post.authorId ||
-                    storedUser.isAdmin);
-
-                return (
-                <div key={c.id} className="comment">
-                    <p>
-                    <strong>{c.author?.name || 'Unknown User'}:</strong> {c.content}
-                    </p>
-                    {canDelete && (
-                    <button onClick={() => handleDeleteComment(c.id)}>Delete</button>
+                <p>{post.description}</p>
+                <div className="action-buttons">
+                    <button 
+                        onClick={handleSavePost} 
+                        className={`save-button ${isSaved ? 'saved' : ''}`}
+                    >
+                        <i className={`fas ${isSaved ? 'fa-bookmark' : 'fa-bookmark-o'}`}></i>
+                        {isSaved ? 'Unsave post' : 'Save post'}
+                    </button>
+                    <button onClick={() => setShowReportForm(true)} className="report-button">
+                        <i className="fas fa-flag"></i>
+                        Report
+                    </button>
+                    {isOwner && (
+                        <>
+                        <button onClick={handleEdit}>Edit</button>
+                        <button onClick={handleDeletePost} className="delete-button">Delete</button>
+                        </>
                     )}
                 </div>
-                );
-            })}
+                <div className="comments-section">
+                    <h2>Comments</h2>
+                    <div className="comments">
+                        {comments.map((c) => {
+                            const storedUser = JSON.parse(localStorage.getItem('user'));
+                            const canDelete =
+                                storedUser &&
+                                (storedUser.id === c.authorId ||
+                                    storedUser.id === post.authorId ||
+                                    storedUser.isAdmin);
+
+                            return (
+                                <div key={c.id} className="comment">
+                                    <p>
+                                        <strong>{c.author?.name || 'Unknown User'}</strong>
+                                        <span className="comment-content">{c.content}</span>
+                                    </p>
+                                    {canDelete && (
+                                        <button className="delete-comment-button" onClick={() => handleDeleteComment(c.id)}>
+                                            <i className="fa-solid fa-trash"></i>
+                                        </button>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <div className="comment-form">
+                        <input
+                            type="text"
+                            className="comment-input"
+                            placeholder="Write a comment..."
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                        />
+                        <button className="comment-submit" onClick={handleAddComment}>
+                            <i className="fa-solid fa-paper-plane"></i> Comment
+                        </button>
+                    </div>
+                </div>
             </div>
-            <input
-            type="text"
-            placeholder="Add a comment"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            />
-            <button onClick={handleAddComment}>Add Comment</button>
-        </div>
+        )}
+        {showReportForm && (
+            <div className="report-modal-overlay">
+                <div className="report-form">
+                    <button className="close-button" onClick={() => setShowReportForm(false)}>×</button>
+                    <h2>Report Post</h2>
+                    <form onSubmit={handleReportSubmit}>
+                        <div className="report-options">
+                            <div className="report-option">
+                                <input
+                                    type="radio"
+                                    id="spam"
+                                    name="reportReason"
+                                    value="Spam"
+                                    checked={reportReason === 'Spam'}
+                                    onChange={(e) => setReportReason(e.target.value)}
+                                />
+                                <label htmlFor="spam">Spam</label>
+                            </div>
+                            <div className="report-option">
+                                <input
+                                    type="radio"
+                                    id="inappropriate"
+                                    name="reportReason"
+                                    value="Inappropriate Content"
+                                    checked={reportReason === 'Inappropriate Content'}
+                                    onChange={(e) => setReportReason(e.target.value)}
+                                />
+                                <label htmlFor="inappropriate">Inappropriate Content</label>
+                            </div>
+                            <div className="report-option">
+                                <input
+                                    type="radio"
+                                    id="misinformation"
+                                    name="reportReason"
+                                    value="Misinformation"
+                                    checked={reportReason === 'Misinformation'}
+                                    onChange={(e) => setReportReason(e.target.value)}
+                                />
+                                <label htmlFor="misinformation">Misinformation</label>
+                            </div>
+                            <div className="report-option">
+                                <input
+                                    type="radio"
+                                    id="other"
+                                    name="reportReason"
+                                    value="Other"
+                                    checked={reportReason === 'Other'}
+                                    onChange={(e) => setReportReason(e.target.value)}
+                                />
+                                <label htmlFor="other">Other</label>
+                            </div>
+                        </div>
+                        <textarea
+                            placeholder="Additional details (Optional)"
+                            value={additionalDetails}
+                            onChange={(e) => setAdditionalDetails(e.target.value)}
+                        />
+                        <div className="button-group">
+                            <button type="button" className="cancel-button" onClick={() => setShowReportForm(false)}>
+                                Cancel
+                            </button>
+                            <button type="submit" className="submit-button">
+                                Submit Report
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        )}
         {isLightboxOpen && (
             <div className="lightbox">
             <button className="close-button" onClick={() => { closeLightbox(); resetZoom(); }}>X</button>
