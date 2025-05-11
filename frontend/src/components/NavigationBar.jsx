@@ -26,7 +26,7 @@ function NavigationBar({
   };
 
   const handleRefresh = () => {
-    window.location.reload();
+    window.location.href = '/';
   };
 
   return (

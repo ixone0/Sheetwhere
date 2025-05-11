@@ -1,8 +1,31 @@
 .admin {
-    padding: 30px;
+    padding: 20px;
+    background: linear-gradient(135deg, #fef9f3 0%, #fff5e5 100%);
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Add decorative elements */
+.admin::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 15% 50%, rgba(255, 170, 100, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 85% 30%, rgba(255, 150, 50, 0.15) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.admin-content {
     max-width: 1400px;
-    margin: 0 auto;
-    animation: fadeIn 0.5s ease;
+    margin: 30px auto;
+    position: relative;
+    z-index: 1;
 }
 
 .admin h1 {
@@ -28,10 +51,12 @@
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    background: white;
+    background: rgba(255, 255, 255, 0.95);
     border-radius: 15px;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(240, 173, 78, 0.2);
 }
 
 .admin-table th,

@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './Admin.css';
+import NavigationBar from './components/NavigationBar';
 
 function Admin() {
   const [reports, setReports] = useState([]);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -15,6 +17,7 @@ function Admin() {
           navigate('/login');
           return;
         }
+        setUser(storedUser);
       } catch (error) {
         console.error('Error checking admin status:', error);
         navigate('/login');
@@ -76,47 +79,54 @@ function Admin() {
 
   return (
     <div className="admin">
-      <h1>Reported posts</h1>
-      <table className="admin-table">
-        <thead>
-          <tr>
-            <th>Post</th>
-            <th>Username</th>
-            <th>Reason</th>
-            <th>Date</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {reports.map((report) => (
-            <tr key={report.id}>
-              <td>
-                <img src={report.post.fileUrls[0] || 'placeholder.png'} alt="Post" />
-              </td>
-              <td>{report.reporter.name}</td>
-              <td>
-                {report.reason}
-                {report.details && ` - ${report.details}`}
-              </td>
-              <td>{new Date(report.createdAt).toLocaleString()}</td>
-              <td>
-                <button
-                  onClick={() => handleApprove(report.post.id)}
-                  className="admin-button admin-approve-button"
-                >
-                  Approve
-                </button>
-                <button
-                  onClick={() => handleReject(report.id)}
-                  className="admin-button admin-reject-button"
-                >
-                  Reject
-                </button>
-              </td>
+      <NavigationBar 
+        user={user}
+        setUser={setUser}
+        showSearch={false}
+      />
+      <div className="admin-content">
+        <h1>Reported posts</h1>
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>Post</th>
+              <th>Username</th>
+              <th>Reason</th>
+              <th>Date</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {reports.map((report) => (
+              <tr key={report.id}>
+                <td>
+                  <img src={report.post.fileUrls[0] || 'placeholder.png'} alt="Post" />
+                </td>
+                <td>{report.reporter.name}</td>
+                <td>
+                  {report.reason}
+                  {report.details && ` - ${report.details}`}
+                </td>
+                <td>{new Date(report.createdAt).toLocaleString()}</td>
+                <td>
+                  <button
+                    onClick={() => handleApprove(report.post.id)}
+                    className="admin-button admin-approve-button"
+                  >
+                    Approve
+                  </button>
+                  <button
+                    onClick={() => handleReject(report.id)}
+                    className="admin-button admin-reject-button"
+                  >
+                    Reject
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

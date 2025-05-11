@@ -286,11 +286,23 @@
     color: #666;
     margin: 0;
     line-height: 1.6;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
+    /* Fallback for non-WebKit browsers */
     overflow: hidden;
     text-overflow: ellipsis;
+    display: block;
+    /* For WebKit browsers */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    /* Fallback for non-line-clamp support */
+    max-height: 4.8em; /* line-height * number of lines */
+}
+
+/* Add support for Firefox */
+@supports (-webkit-line-clamp: 3) {
+    .post-description {
+        max-height: none;
+    }
 }
 
 .post-footer {

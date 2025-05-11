@@ -130,6 +130,8 @@
     line-height: 1.6;
     color: #666;
     margin: 15px 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .tags {
@@ -1385,4 +1387,11 @@
 .post-date:before {
     content: '•';
     color: #f0ad4e;
+}
+
+.post-description {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+    max-width: 100%;
 }
