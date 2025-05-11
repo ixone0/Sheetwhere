@@ -19,6 +19,13 @@ function Profile() {
     description: '',
     fileUrls: [],
   });
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [stats, setStats] = useState({
+    posts: 0,
+    followers: 0,
+    following: 0,
+    likes: 0
+  });
 
   // Fetch user data based on the ID
   useEffect(() => {
@@ -78,6 +85,19 @@ function Profile() {
 
     fetchTags();
   }, []);
+
+  // Temporary stats update for demonstration
+  useEffect(() => {
+    if (posts.length > 0) {
+      setStats(prev => ({
+        ...prev,
+        posts: posts.length,
+        followers: 120, // Dummy data
+        following: 85,  // Dummy data
+        likes: 450     // Dummy data
+      }));
+    }
+  }, [posts]);
 
   // Handle Add Post
   const handleAddPost = async (e) => {
@@ -161,6 +181,15 @@ function Profile() {
     }
   };
 
+  const handleProfileClick = () => {
+    document.getElementById('profile-image-upload').click();
+  };
+
+  const handleFollow = () => {
+    setIsFollowing(!isFollowing);
+    // Backend integration will be added later
+  };
+
   return (
     <div className="profile">
       {/* Top Bar */}
@@ -186,17 +215,40 @@ function Profile() {
 
       {/* Profile Section */}
       <div className="profile-header">
-        <div className="profile-picture">
+        <div className="profile-picture" onClick={handleProfileClick}>
           <img src={user?.image || 'placeholder-profile.png'} alt="Profile" />
           <input
             type="file"
             accept="image/*"
-            style={{ display: 'none' }} // ซ่อน input
-            onChange={handleProfileImageUpload} // เรียกฟังก์ชันอัปโหลดเมื่อเลือกไฟล์
+            style={{ display: 'none' }}
+            onChange={handleProfileImageUpload}
             id="profile-image-upload"
           />
         </div>
-        <h2>{user?.name || 'Name'}</h2>
+        
+        <div className="profile-info">
+          <h2>{user?.name || 'Name'}</h2>
+        </div>
+
+        <div className="profile-stats">
+          <div className="stat-item">
+            <span className="stat-number">{stats.posts}</span>
+            <span className="stat-label">Posts</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-number">{stats.followers}</span>
+            <span className="stat-label">Followers</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-number">{stats.following}</span>
+            <span className="stat-label">Following</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-number">{stats.likes}</span>
+            <span className="stat-label">Likes</span>
+          </div>
+        </div>
+
         <div className="profile-actions">
           <button onClick={() => setShowAddPostForm(!showAddPostForm)}>+</button>
           <div className="dropdown">

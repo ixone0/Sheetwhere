@@ -8,6 +8,9 @@ function Post() {
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
   const [isOwner, setIsOwner] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+  const [isFollowing, setIsFollowing] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false); // สำหรับเปิด/ปิด Lightbox
   const [currentImageIndex, setCurrentImageIndex] = useState(0); // เก็บ index ของรูปภาพปัจจุบัน
   const [comment, setComment] = useState('');
@@ -33,6 +36,15 @@ function Post() {
 
   const resetZoom = () => {
     setZoomLevel(1); // รีเซ็ตการซูม
+  };
+
+  const handleLike = () => {
+    setIsLiked(!isLiked);
+    setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
+  };
+
+  const handleFollow = () => {
+    setIsFollowing(!isFollowing);
   };
 
   useEffect(() => {
@@ -322,6 +334,36 @@ function Post() {
           </div>
         ) : (
             <div className="post-content">
+                <div className="post-header">
+                    <div className="post-author-container">
+                        <div className="post-author">
+                            <img 
+                                src={post.author?.image || '/logo.jpg'} 
+                                alt={post.author?.name || 'Author'} 
+                                className="author-avatar"
+                            />
+                            <div className="author-info">
+                                <h3>{post.author?.name || 'Unknown User'}</h3>
+                                <span className="post-date">
+                                    {new Date(post.createdAt).toLocaleDateString('th-TH', {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    })}
+                                </span>
+                            </div>
+                        </div>
+                        <button 
+                            onClick={handleFollow} 
+                            className={`follow-button ${isFollowing ? 'following' : ''}`}
+                        >
+                            <i className={`fa-solid ${isFollowing ? 'fa-user-check' : 'fa-user-plus'}`}></i>
+                            {isFollowing ? 'Following' : 'Follow'}
+                        </button>
+                    </div>
+                </div>
                 <div className="post-images">
                     {post.fileUrls.map((url, index) => (
                         <img key={index} src={url} alt={`Post ${index}`} onClick={() => openLightbox(index)} />
@@ -334,11 +376,18 @@ function Post() {
                 <p>{post.description}</p>
                 <div className="action-buttons">
                     <button 
+                        onClick={handleLike} 
+                        className={`like-button ${isLiked ? 'liked' : ''}`}
+                    >
+                        <i className={`fa-${isLiked ? 'solid' : 'regular'} fa-heart`}></i>
+                        {likeCount} {likeCount === 1 ? 'Like' : 'Likes'}
+                    </button>
+                    <button 
                         onClick={handleSavePost} 
                         className={`save-button ${isSaved ? 'saved' : ''}`}
                     >
-                        <i className={`fas ${isSaved ? 'fa-bookmark' : 'fa-bookmark-o'}`}></i>
-                        {isSaved ? 'Unsave post' : 'Save post'}
+                        <i className={`fa-solid ${isSaved ? 'fa-bookmark' : 'fa-bookmark'}`}></i>
+                        {isSaved ? 'Unsave' : 'Save'}
                     </button>
                     <button onClick={() => setShowReportForm(true)} className="report-button">
                         <i className="fas fa-flag"></i>
@@ -346,8 +395,14 @@ function Post() {
                     </button>
                     {isOwner && (
                         <>
-                        <button onClick={handleEdit}>Edit</button>
-                        <button onClick={handleDeletePost} className="delete-button">Delete</button>
+                            <button onClick={handleEdit} className="edit-button">
+                                <i className="fa-solid fa-pen"></i>
+                                Edit
+                            </button>
+                            <button onClick={handleDeletePost} className="delete-button">
+                                <i className="fa-solid fa-trash"></i>
+                                Delete
+                            </button>
                         </>
                     )}
                 </div>

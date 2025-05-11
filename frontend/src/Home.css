@@ -104,14 +104,14 @@
 .filter-button {
     padding: 10px;
     margin-left: 4px;
-    min-width: 36px;
-    height: 36px;
+    min-width: 42px; /* เพิ่มขนาด */
+    height: 42px; /* เพิ่มขนาด */
     display: flex;
     align-items: center;
     justify-content: center;
     background: linear-gradient(45deg, #f0ad4e, #ff8d28);
     border: none;
-    border-radius: 18px;
+    border-radius: 21px; /* ปรับให้เป็นครึ่งหนึ่งของ height เพื่อให้เป็นวงกลมสมบูรณ์ */
     color: white;
     cursor: pointer;
     flex-shrink: 0;
@@ -122,6 +122,10 @@
     transform: translateY(-1px);
     box-shadow: 0 4px 15px rgba(240, 173, 78, 0.2);
     background: linear-gradient(45deg, #ff8d28, #f0ad4e);
+}
+
+.filter-button i {
+    font-size: 20px; /* เพิ่มขนาดไอคอน */
 }
 
 .logo {

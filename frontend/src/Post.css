@@ -169,40 +169,66 @@
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 135px;
+    height: 40.66px;
+    position: relative;
+    overflow: hidden;
+    border: none;
+}
+
+.action-buttons button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 150%;
+    height: 150%;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.5s ease-out;
+    pointer-events: none;
+    opacity: 0;
+}
+
+.action-buttons button:hover::before {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
 }
 
 .save-button {
-    background: white;
-    color: #f0ad4e;
-    border: 2px solid #f0ad4e;
+    background: #28a745;
+    color: white;
+    border: 2px solid #28a745;
     transform-origin: center;
 }
 
 .save-button i {
     font-size: 16px;
-    transition: transform 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center;
 }
 
 .save-button:hover {
-    background: #f0ad4e;
-    color: white;
+    background: white;
+    color: #28a745;
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(240, 173, 78, 0.2);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2),
+                0 0 0 2px rgba(40, 167, 69, 0.1);
 }
 
 .save-button:hover i {
-    transform: scale(1.2);
+    transform: rotate(-20deg) scale(1.2);
 }
 
 .save-button.saved {
-    background: #f0ad4e;
+    background: #28a745;
     color: white;
 }
 
 .save-button.saved:hover {
     background: white;
-    color: #f0ad4e;
+    color: #28a745;
 }
 
 .report-button {
@@ -214,17 +240,63 @@
 
 .report-button i {
     font-size: 16px;
-    transition: transform 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center;
 }
 
 .report-button:hover {
     background: #fff5f5;
     color: #dc3545;
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.2);
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.2),
+                0 0 0 2px rgba(220, 53, 69, 0.1);
 }
 
 .report-button:hover i {
+    transform: rotate(-20deg) scale(1.2);
+}
+
+.edit-button {
+    background: #c5a744;
+    color: white;
+    border: 2px solid #4CAF50;
+}
+
+.edit-button:hover {
+    background: white;
+    color: #c5a744;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2);
+}
+
+.edit-button i {
+    font-size: 16px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.edit-button:hover i {
+    transform: rotate(-20deg) scale(1.2);
+}
+
+.delete-button {
+    background: #dc3545;
+    color: white;
+    border: 2px solid #dc3545;
+}
+
+.delete-button:hover {
+    background: white;
+    color: #dc3545;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.2);
+}
+
+.delete-button i {
+    font-size: 16px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.delete-button:hover i {
     transform: rotate(-20deg) scale(1.2);
 }
 
@@ -232,43 +304,27 @@
     transform: scale(0.95);
 }
 
-.save-button {
-    background: white;
-    color: #f0ad4e;
-    border: 2px solid #f0ad4e;
-    padding: 12px 25px;
-    border-radius: 25px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
+@keyframes bookmarkPulse {
+    0% { transform: scale(1.2) rotate(10deg); }
+    50% { transform: scale(1.4) rotate(10deg); }
+    100% { transform: scale(1.2) rotate(10deg); }
 }
 
-.save-button:hover {
-    background: #f0ad4e;
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(240, 173, 78, 0.2);
+@keyframes saveComplete {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.4); }
+    100% { transform: scale(1); }
 }
 
-.save-button.saved {
-    background: #f0ad4e;
-    color: white;
+.action-buttons button:focus {
+    outline: none;
+    animation: pulse 0.3s ease-in-out;
 }
 
-.save-button.saved:hover {
-    background: white;
-    color: #f0ad4e;
-}
-
-.report-button {
-    background: white;
-    color: #dc3545;
-    border: 2px solid #dc3545;
-}
-
-.report-button:hover {
-    background: #fff5f5;
-    transform: translateY(-2px);
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 }
 
 @keyframes fadeIn {
@@ -494,7 +550,7 @@
     border: none;
     padding: 10px 20px;
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 0px;
   }
   
   .report-form {
@@ -633,7 +689,7 @@
 }
 
 .save-button:hover {
-  background-color: darkgreen;
+  background-color: rgb(255, 255, 255);
 }
 
 .cancel-button:hover {
@@ -985,4 +1041,402 @@
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+.edit-form {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    max-width: 800px;
+    margin: 30px auto;
+    position: relative;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(240, 173, 78, 0.2);
+    animation: slideIn 0.3s ease-out;
+}
+
+.edit-form::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #f0ad4e, #ff8d28);
+    border-radius: 20px 20px 0 0;
+}
+
+.edit-form h2 {
+    color: #333;
+    font-size: 28px;
+    margin-bottom: 25px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+    width: 95%;
+    padding: 12px 15px;
+    border: 2px solid #eaeaea;
+    border-radius: 12px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #f0ad4e;
+    box-shadow: 0 0 0 4px rgba(240, 173, 78, 0.1);
+    background: white;
+}
+
+.form-group textarea {
+    height: 150px;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+.edit-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.image-preview {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 1;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.image-preview:hover {
+    transform: translateY(-5px);
+}
+
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.3s ease;
+}
+
+.delete-image-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(220, 53, 69, 0.9);
+    color: white;
+    border: none;
+    width: 50px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.3s ease;
+}
+
+.image-preview:hover .delete-image-button {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.delete-image-button:hover {
+    background: #dc3545;
+    transform: scale(1.1);
+}
+
+.form-group input[type="file"] {
+    display: block;
+    width: 95%;
+    padding: 12px;
+    background: #f8f9fa;
+    border: 2px dashed #ddd;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.form-group input[type="file"]:hover {
+    border-color: #f0ad4e;
+    background: rgba(240, 173, 78, 0.05);
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    justify-content: flex-end;
+}
+
+.form-actions button {
+    padding: 12px 25px;
+    border-radius: 25px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    min-width: 120px;
+}
+
+.form-actions .save-button {
+    background: #28a745;
+    color: white;
+    border: 2px solid #28a745;
+}
+
+.form-actions .save-button:hover {
+    background: white;
+    color: #28a745;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
+}
+
+.form-actions .cancel-button {
+    background: white;
+    color: #6c757d;
+    border: 2px solid #6c757d;
+}
+
+.form-actions .cancel-button:hover {
+    background: #6c757d;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.2);
+}
+
+.like-button {
+    background: white;
+    color: #ff4d4d;
+    border: 2px solid #ff4d4d;
+    transform-origin: center;
+}
+
+.like-button i {
+    font-size: 16px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center;
+}
+
+.like-button:hover {
+    background: #fff5f5;
+    color: #ff4d4d;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 77, 77, 0.2),
+                0 0 0 2px rgba(255, 77, 77, 0.1);
+}
+
+.like-button:hover i {
+    transform: scale(1.2);
+}
+
+.like-button.liked {
+    background: #ff4d4d;
+    color: white;
+}
+
+.like-button.liked:hover {
+    background: white;
+    color: #ff4d4d;
+}
+
+.like-button.liked i {
+    animation: heartBeat 0.3s ease-in-out;
+}
+
+@keyframes heartBeat {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+}
+
+.follow-button {
+    background: #5c7cfa;
+    color: white;
+    border: 2px solid #5c7cfa;
+}
+
+.follow-button i {
+    font-size: 16px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.follow-button:hover {
+    background: white;
+    color: #5c7cfa;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(92, 124, 250, 0.2);
+}
+
+.follow-button:hover i {
+    transform: rotate(0deg) scale(1.2);
+}
+
+.follow-button.following {
+    background: white;
+    color: #5c7cfa;
+}
+
+.follow-button.following:hover {
+    background: #5c7cfa;
+    color: white;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.post-header {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid rgba(240, 173, 78, 0.1);
+}
+
+.post-author {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+.post-author:hover {
+    background: rgba(240, 173, 78, 0.1);
+    transform: translateX(5px);
+}
+
+.post-author:active {
+    transform: scale(0.98) translateX(5px);
+}
+
+.author-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #f0ad4e;
+    padding: 2px;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.post-author:hover .author-avatar {
+    transform: scale(1.1);
+    border-color: #ff8d28;
+}
+
+.author-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.author-info h3 {
+    margin: 0;
+    color: #333;
+    font-size: 18px;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.post-author:hover .author-info h3 {
+    color: #f0ad4e;
+}
+
+.post-date {
+    color: #666;
+    font-size: 14px;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.post-date:before {
+    content: '•';
+    color: #f0ad4e;
+}
+
+.post-author-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.post-author {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    border-radius: 15px;
+}
+
+.follow-button {
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-left: 20px;
+    background: #5c7cfa;
+    color: white;
+    border: 2px solid #5c7cfa;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.follow-button i {
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.follow-button:hover {
+    background: white;
+    color: #5c7cfa;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(92, 124, 250, 0.2);
+}
+
+.follow-button.following {
+    background: white;
+    color: #5c7cfa;
+}
+
+.follow-button.following:hover {
+    background: #5c7cfa;
+    color: white;
 }
