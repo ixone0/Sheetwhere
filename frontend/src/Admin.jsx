@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './Admin.css';
 import NavigationBar from './components/NavigationBar';
 
@@ -100,7 +100,9 @@ function Admin() {
             {reports.map((report) => (
               <tr key={report.id}>
                 <td>
-                  <img src={report.post.fileUrls[0] || 'placeholder.png'} alt="Post" />
+                  <Link to={`/posts/${report.post.id}`}>
+                    <img src={report.post.fileUrls[0] || 'placeholder.png'} alt="Post" />
+                  </Link>
                 </td>
                 <td>{report.reporter.name}</td>
                 <td>
