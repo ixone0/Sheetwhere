@@ -252,44 +252,77 @@ transition: all 0.3s ease;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 25px;
-    padding: 20px;
+    padding: 25px;
     max-width: 1200px;
     margin: 0 auto;
     animation: fadeIn 0.5s ease;
 }
 
 .post {
-    background-color: white;
+    background: rgba(255, 255, 255, 0.9);
     border-radius: 15px;
     overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
-    height: 320px;
+    height: 350px;
+    display: flex;
+    flex-direction: column;
     text-decoration: none;
+    position: relative;
+    backdrop-filter: blur(5px);
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    min-height: 450px;
     animation: fadeInScale 0.5s ease;
     animation-fill-mode: both;
 }
 
+.post::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.5));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+    pointer-events: none;
+}
+
 .post:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 12px 25px rgba(240, 173, 78, 0.2);
+}
+
+.post:hover::before {
+    opacity: 1;
 }
 
 .post img {
     width: 100%;
     height: 220px;
     object-fit: cover;
-    border-bottom: 1px solid #eaeaea;
+    transition: transform 0.3s ease;
+}
+
+.post:hover img {
+    transform: scale(1.05);
 }
 
 .post p {
-    margin: 15px;
+    padding: 16px;
     font-size: 16px;
     font-weight: 600;
     color: #333;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
+    margin: 0;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    background: white;
 }
 
 .add-post-form {
@@ -568,6 +601,26 @@ transition: all 0.3s ease;
     .profile-actions {
         margin-left: 0;
     }
+
+    .content {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+        padding: 15px;
+    }
+
+    .post {
+        height: 280px;
+        min-height: 350px;
+    }
+
+    .post img {
+        height: 180px;
+    }
+
+    .post p {
+        font-size: 14px;
+        padding: 12px;
+    }
 }
 
 @media (max-width: 576px) {
@@ -592,6 +645,26 @@ transition: all 0.3s ease;
     .logo {
         font-size: 22px;
         padding: 6px 12px;
+    }
+
+    .content {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 12px;
+        padding: 12px;
+    }
+
+    .post {
+        height: 200px;
+        min-height: 280px;
+    }
+
+    .post img {
+        height: 130px;
+    }
+
+    .post p {
+        font-size: 12px;
+        padding: 8px;
     }
 }
 

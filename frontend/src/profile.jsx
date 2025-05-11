@@ -329,15 +329,35 @@ function Profile() {
         {activeTab === 'posts' &&
           posts.map((post) => (
             <Link to={`/posts/${post.id}`} key={post.id} className="post">
-              <img src={post.fileUrls[0] || 'placeholder.png'} alt="Post" />
-              <p>{post.title}</p>
+              <div className="post-image">
+                <img src={post.fileUrls[0] || 'placeholder.png'} alt="Post" />
+              </div>
+              <div className="post-content">
+                <h3 className="post-title">{post.title}</h3>
+                <div className="post-tags">
+                  {post.tags.map((tag, index) => (
+                    <span key={index} className="tag">#{tag.name}</span>
+                  ))}
+                </div>
+                <p className="post-description">{post.description}</p>
+              </div>
             </Link>
           ))}
         {activeTab === 'saved' &&
           savedPosts.map((post) => (
             <Link to={`/posts/${post.id}`} key={post.id} className="post">
-              <img src={post.fileUrls[0] || 'placeholder.png'} alt="Post" />
-              <p>{post.title}</p>
+              <div className="post-image">
+                <img src={post.fileUrls[0] || 'placeholder.png'} alt="Post" />
+              </div>
+              <div className="post-content">
+                <h3 className="post-title">{post.title}</h3>
+                <div className="post-tags">
+                  {post.tags.map((tag, index) => (
+                    <span key={index} className="tag">#{tag.name}</span>
+                  ))}
+                </div>
+                <p className="post-description">{post.description}</p>
+              </div>
             </Link>
           ))}
       </div>

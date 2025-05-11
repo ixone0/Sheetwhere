@@ -170,6 +170,7 @@
     backdrop-filter: blur(5px);
     transform: translateZ(0);
     backface-visibility: hidden;
+    min-height: 450px;
 }
 
 .post::before {
@@ -207,19 +208,143 @@
 }
 
 .post p {
-    padding: 15px;
+    padding: 0px;
     font-size: 16px;
     font-weight: 600;
     color: #333;
     margin: 0;
     flex-grow: 1;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+    align-items: left;
+    justify-content: left;
+    text-align: left;
     position: relative;
     z-index: 2;
     background: white;
+}
+
+.post-image {
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+    border-radius: 15px 15px 0 0;
+}
+
+.post-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.post:hover .post-image img {
+    transform: scale(1.08);
+}
+
+.post-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: white;
+    flex: 1;
+    position: relative;
+    z-index: 2;
+}
+
+.post-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.tag {
+    font-size: 12px;
+    color: #f0ad4e;
+    background: rgba(240, 173, 78, 0.1);
+    padding: 4px 8px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.tag:hover {
+    background: rgba(240, 173, 78, 0.2);
+    transform: translateY(-1px);
+}
+
+.post-description {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.post-footer {
+    margin-top: auto;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;  /* Add this to align content to the right */
+}
+
+.like-button {
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-left: auto;  /* Add this to push button to the right */
+}
+
+.like-button i {
+    color: #777;
+    font-size: 20px;
+    transition: all 0.3s ease;
+    transform-origin: center;
+}
+
+.like-button span {
+    color: #777;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.like-button:hover i {
+    transform: scale(1.2);
+    color: #ff4d4d;
+}
+
+.like-button.liked i {
+    color: #ff4d4d;
+    animation: heartBeat 0.3s ease-in-out;
+}
+
+.like-button.liked span {
+    color: #ff4d4d;
+}
+
+@keyframes heartBeat {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.4); }
+    100% { transform: scale(1); }
 }
 
 .selected-tags {
@@ -540,6 +665,63 @@
         font-size: 12px;
         padding: 3px 6px;
     }
+
+
+    .post-image {
+        height: 250px;
+    }
+
+    .post-content {
+        padding: 12px;
+        gap: 8px;
+    }
+
+    .post-title {
+        font-size: 16px;
+    }
+
+    .post-description {
+        font-size: 13px;
+        -webkit-line-clamp: 2;
+    }
+
+    .tag {
+        font-size: 11px;
+        padding: 3px 6px;
+    }
+
+    .posts {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+        padding: 15px;
+    }
+
+    .post {
+        height: 280px;
+        min-height: 350px;
+    }
+
+    .post img {
+        height: 180px;
+    }
+
+    .post-content {
+        padding: 12px;
+    }
+
+    .post-title {
+        font-size: 16px;
+    }
+
+    .post-description {
+        font-size: 13px;
+        -webkit-line-clamp: 2;
+    }
+
+    .tag {
+        font-size: 11px;
+        padding: 3px 6px;
+    }
 }
 
 @media (max-width: 576px) {
@@ -553,6 +735,34 @@
         width: 100%;
         margin: 10px 0 0 0;
         max-width: none;
+    }
+
+    .posts {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 12px;
+        padding: 12px;
+    }
+
+    .post {
+        height: 200px;
+        min-height: 280px;
+    }
+
+    .post img {
+        height: 130px;
+    }
+
+    .post-content {
+        padding: 8px;
+    }
+
+    .post-title {
+        font-size: 14px;
+    }
+
+    .post-description {
+        font-size: 12px;
+        -webkit-line-clamp: 2;
     }
 }
 

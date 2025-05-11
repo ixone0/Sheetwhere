@@ -13,6 +13,7 @@ function Home() {
   const [showFilter, setShowFilter] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
+  const [likedPosts, setLikedPosts] = useState({});
 
   // Check if user is logged in
   useEffect(() => {
@@ -85,6 +86,17 @@ function Home() {
       <div className="skeleton-text"></div>
     </div>
   );
+
+  // Add handleLike function
+  const handleLike = async (e, postId) => {
+    e.preventDefault(); // Prevent navigation
+    e.stopPropagation(); // Prevent event bubbling
+    
+    setLikedPosts(prev => ({
+      ...prev,
+      [postId]: !prev[postId],
+    }));
+  };
 
   return (
     <div className="home">
@@ -159,13 +171,31 @@ function Home() {
       {/* Posts Section */}
       <div className="posts">
         {isLoading ? (
-          // Show skeletons while loading
           Array(8).fill(null).map((_, index) => <PostSkeleton key={index} />)
         ) : posts.length > 0 ? (
           posts.map((post) => (
             <Link to={`/posts/${post.id}`} key={post.id} className="post">
-              <img src={post.fileUrls[0] || 'placeholder.png'} alt="Post" />
-              <p>{post.title}</p>
+              <div className="post-image">
+                <img src={post.fileUrls[0] || 'placeholder.png'} alt="Post" />
+              </div>
+              <div className="post-content">
+                <h3 className="post-title">{post.title}</h3>
+                <div className="post-tags">
+                  {post.tags.map((tag, index) => (
+                    <span key={index} className="tag">#{tag.name}</span>
+                  ))}
+                </div>
+                <p className="post-description">{post.description}</p>
+                <div className="post-footer">
+                  <button 
+                    className={`like-button ${likedPosts[post.id] ? 'liked' : ''}`}
+                    onClick={(e) => handleLike(e, post.id)}
+                  >
+                    <i className={`fa-${likedPosts[post.id] ? 'solid' : 'regular'} fa-heart`}></i>
+                    <span>{post.likes || 0}</span>
+                  </button>
+                </div>
+              </div>
             </Link>
           ))
         ) : (

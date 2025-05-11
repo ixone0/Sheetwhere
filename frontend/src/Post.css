@@ -1231,7 +1231,7 @@
 .like-button {
     background: white;
     color: #ff4d4d;
-    border: 2px solid #ff4d4d;
+    border: 0px solid #ff4d4d;
     transform-origin: center;
 }
 
@@ -1254,8 +1254,8 @@
 }
 
 .like-button.liked {
-    background: #ff4d4d;
-    color: white;
+    background: #ffffff;
+    color: #ff4d4d;
 }
 
 .like-button.liked:hover {
@@ -1385,58 +1385,4 @@
 .post-date:before {
     content: '•';
     color: #f0ad4e;
-}
-
-.post-author-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-}
-
-.post-author {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 10px;
-    border-radius: 15px;
-}
-
-.follow-button {
-    padding: 8px 20px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-left: 20px;
-    background: #5c7cfa;
-    color: white;
-    border: 2px solid #5c7cfa;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.follow-button i {
-    font-size: 14px;
-    transition: all 0.3s ease;
-}
-
-.follow-button:hover {
-    background: white;
-    color: #5c7cfa;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(92, 124, 250, 0.2);
-}
-
-.follow-button.following {
-    background: white;
-    color: #5c7cfa;
-}
-
-.follow-button.following:hover {
-    background: #5c7cfa;
-    color: white;
 }
