@@ -52,15 +52,13 @@ const getTags = async (req, res) => {
 }
 
 const getPosts = async (req, res) => {
-  const { search, tags } = req.query;
+  const { search, tags, userId } = req.query; // เพิ่ม userId ใน query string
   try {
-    // แปลง tags string เป็น array (ถ้ามี)
     const tagArray = tags ? tags.split(',').filter(Boolean) : [];
 
     const posts = await prisma.post.findMany({
       where: {
         AND: [
-          // เงื่อนไขการค้นหาด้วย search query
           search
             ? {
                 OR: [
@@ -69,26 +67,32 @@ const getPosts = async (req, res) => {
                 ],
               }
             : {},
-          // เงื่อนไขการกรองด้วย tags แบบ OR
           tagArray.length > 0
             ? {
                 tags: {
                   some: {
                     name: {
-                      in: tagArray // ใช้ in จะทำให้เป็นเงื่อนไข OR โดยอัตโนมัติ
-                    }
-                  }
-                }
+                      in: tagArray,
+                    },
+                  },
+                },
               }
             : {},
         ],
       },
       include: {
         tags: true,
+        likedBy: true, // ดึงข้อมูลผู้ใช้ที่กดไลค์โพสต์นี้
       },
     });
 
-    res.status(200).json(posts);
+    // เพิ่ม isLiked สำหรับแต่ละโพสต์
+    const postsWithIsLiked = posts.map((post) => ({
+      ...post,
+      isLiked: post.likedBy.some((user) => user.id === userId), // ตรวจสอบว่าผู้ใช้กดไลค์หรือยัง
+    }));
+
+    res.status(200).json(postsWithIsLiked);
   } catch (error) {
     console.error('Error fetching posts:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -122,6 +126,7 @@ const createPost = async (req, res) => {
 
 const getPostById = async (req, res) => {
   const { id } = req.params;
+  const { userId } = req.query; // รับ userId จาก query string
 
   try {
     const post = await prisma.post.findUnique({
@@ -133,11 +138,12 @@ const getPostById = async (req, res) => {
             author: {
               select: {
                 id: true,
-                name: true, // ดึงชื่อของผู้คอมเมนต์
+                name: true,
               },
             },
           },
         },
+        likedBy: true, // ดึงข้อมูลผู้ใช้ที่กดไลค์โพสต์นี้
       },
     });
 
@@ -145,7 +151,14 @@ const getPostById = async (req, res) => {
       return res.status(404).json({ error: 'Post not found' });
     }
 
-    res.status(200).json(post);
+    // ตรวจสอบว่าผู้ใช้คนนี้กดไลค์โพสต์นี้หรือยัง
+    const isLiked = post.likedBy.some((user) => user.id === userId);
+
+    res.status(200).json({
+      ...post,
+      isLiked, // ส่งสถานะการกดไลค์กลับไป
+      likeCount: post.likeCount, // ส่งจำนวนไลค์กลับไป
+    });
   } catch (error) {
     console.error('Error fetching post:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -384,6 +397,55 @@ const deletePost = async (req, res) => {
   }
 };
 
+const toggleLike = async (req, res) => {
+  const { id } = req.params; // postId
+  const { userId } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ error: 'User ID is required.' });
+  }
+
+  try {
+    const post = await prisma.post.findUnique({
+      where: { id },
+      include: { likedBy: true }, // ดึงข้อมูลผู้ใช้ที่กดไลค์โพสต์นี้
+    });
+
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found.' });
+    }
+
+    const hasLiked = post.likedBy.some((user) => user.id === userId);
+
+    if (hasLiked) {
+      // ถ้าผู้ใช้กดไลค์อยู่แล้ว ให้ลบไลค์
+      const updatedPost = await prisma.post.update({
+        where: { id },
+        data: {
+          likedBy: { disconnect: { id: userId } },
+          likeCount: post.likeCount - 1,
+        },
+      });
+
+      return res.status(200).json({ isLiked: false, likeCount: updatedPost.likeCount });
+    } else {
+      // ถ้าผู้ใช้ยังไม่ได้กดไลค์ ให้เพิ่มไลค์
+      const updatedPost = await prisma.post.update({
+        where: { id },
+        data: {
+          likedBy: { connect: { id: userId } },
+          likeCount: post.likeCount + 1,
+        },
+      });
+
+      return res.status(200).json({ isLiked: true, likeCount: updatedPost.likeCount });
+    }
+  } catch (error) {
+    console.error('Error toggling like:', error);
+    res.status(500).json({ error: 'Error toggling like.' });
+  }
+};
+
 module.exports = {
   getTags,
   getPosts,
@@ -400,4 +462,5 @@ module.exports = {
   reportPost,
   updatePost,
   deletePost,
+  toggleLike,
 };

@@ -314,29 +314,21 @@
 }
 
 .like-button {
-    background: transparent;
-    border: none;
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border-radius: 20px;
+    background: none;
+    border: none;
     cursor: pointer;
-    transition: all 0.3s ease;
-    margin-left: auto;  /* Add this to push button to the right */
+    color: #555;
+    font-size: 16px;
+}
+
+.like-button.liked {
+    color: #e74c3c;
 }
 
 .like-button i {
-    color: #777;
-    font-size: 20px;
-    transition: all 0.3s ease;
-    transform-origin: center;
-}
-
-.like-button span {
-    color: #777;
-    font-size: 14px;
-    font-weight: 500;
+    margin-right: 5px;
 }
 
 .like-button:hover i {
@@ -357,6 +349,15 @@
     0% { transform: scale(1); }
     50% { transform: scale(1.4); }
     100% { transform: scale(1); }
+}
+
+.post-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.post-link:hover {
+    opacity: 0.9;
 }
 
 .selected-tags {

@@ -19,6 +19,7 @@ model User {
   comments    Comment[]
   reports     Report[]  // Reports submitted by the user
   savedPosts  Post[]    @relation("SavedPosts") // Posts saved by the user
+  likedPosts  Post[]    @relation("LikedPosts") // เพิ่มความสัมพันธ์สำหรับโพสต์ที่ผู้ใช้กดไลค์
   createdAt   DateTime  @default(now())
 }
 
@@ -33,6 +34,8 @@ model Post {
   comments    Comment[]
   reports     Report[]
   savedBy     User[]    @relation("SavedPosts")
+  likedBy     User[]    @relation("LikedPosts") // เพิ่มความสัมพันธ์สำหรับผู้ใช้ที่กดไลค์โพสต์นี้
+  likeCount   Int       @default(0) // จำนวนไลค์
   createdAt   DateTime  @default(now())
 }
 

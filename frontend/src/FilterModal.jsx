@@ -23,9 +23,9 @@ const FilterModal = ({ isOpen, onClose, onApplyFilter }) => {
   }, [isOpen]);
 
   const handleSubjectClick = (subjectCode) => {
-    setSelectedSubjects(prev => {
+    setSelectedSubjects((prev) => {
       if (prev.includes(subjectCode)) {
-        return prev.filter(code => code !== subjectCode);
+        return prev.filter((code) => code !== subjectCode);
       }
       return [...prev, subjectCode];
     });
@@ -43,14 +43,16 @@ const FilterModal = ({ isOpen, onClose, onApplyFilter }) => {
       <div className="filter-modal">
         <div className="filter-modal-header">
           <h2>Filter</h2>
-          <button className="close-button" onClick={onClose}>×</button>
+          <button className="close-button" onClick={onClose}>
+            ×
+          </button>
         </div>
-        
+
         <div className="terms-container">
-          {Object.keys(subjects).map(term => (
-            <div 
+          {Object.keys(subjects).map((term) => (
+            <div
               key={term}
-              className={\`term \${selectedTerm === parseInt(term) ? 'selected' : ''}\`}
+              className={`term ${selectedTerm === parseInt(term) ? 'selected' : ''}`}
               onClick={() => setSelectedTerm(parseInt(term))}
             >
               Term {term}
@@ -61,10 +63,10 @@ const FilterModal = ({ isOpen, onClose, onApplyFilter }) => {
         <div className="subjects-container">
           {Object.entries(subjects).map(([term, termSubjects]) => (
             <div key={term} className={selectedTerm === parseInt(term) ? 'visible' : 'hidden'}>
-              {termSubjects.map(subject => (
+              {termSubjects.map((subject) => (
                 <div
                   key={subject.code}
-                  className={\`subject-tag \${selectedSubjects.includes(subject.code) ? 'selected' : ''}\`}
+                  className={`subject-tag ${selectedSubjects.includes(subject.code) ? 'selected' : ''}`}
                   onClick={() => handleSubjectClick(subject.code)}
                 >
                   {subject.code}

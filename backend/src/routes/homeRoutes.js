@@ -19,6 +19,6 @@ router.get('/is-post-saved', homeController.isPostSaved);
 router.post('/unsave-post', homeController.unsavePost);
 router.post('/report-post', homeController.reportPost);
 router.get('/posts', homeController.getPosts);
-
+router.post('/posts/:id/like', homeController.toggleLike);
 
 module.exports = router;

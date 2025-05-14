@@ -38,24 +38,23 @@ function Home() {
   }, []);
 
   const fetchPosts = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const params = new URLSearchParams();
-      if (searchQuery) {
-        params.append('search', searchQuery);
-      }
-      if (selectedTags.length > 0) {
-        params.append('tags', selectedTags.join(','));
-      }
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    const userId = storedUser?.id;
 
-      const response = await axios.get(`http://localhost:5000/api/home/posts?${params}`);
-      setPosts(response.data);
-      setIsSearching(false);
+    try {
+      const response = await axios.get('http://localhost:5000/api/home/posts', {
+        params: {
+          search: searchQuery,
+          tags: selectedTags.join(','),
+          userId, // ส่ง userId ไปยัง backend
+        },
+      });
+
+      setPosts(response.data); // ตั้งค่า posts พร้อมข้อมูล isLiked และ likeCount
       setIsLoading(false);
     } catch (error) {
       console.error('Error fetching posts:', error);
       setIsLoading(false);
-      setIsSearching(false);
     }
   }, [searchQuery, selectedTags]);
 
@@ -88,14 +87,30 @@ function Home() {
   );
 
   // Add handleLike function
-  const handleLike = async (e, postId) => {
-    e.preventDefault(); // Prevent navigation
-    e.stopPropagation(); // Prevent event bubbling
-    
-    setLikedPosts(prev => ({
-      ...prev,
-      [postId]: !prev[postId],
-    }));
+  const handleLike = async (postId) => {
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    if (!storedUser || !storedUser.id) {
+      alert('Please log in to like posts.');
+      return;
+    }
+
+    try {
+      const response = await axios.post(`http://localhost:5000/api/home/posts/${postId}/like`, {
+        userId: storedUser.id, // ตรวจสอบว่าค่านี้ถูกส่งไป
+      });
+
+      // อัปเดตสถานะการกดไลค์และจำนวนไลค์ในโพสต์ที่เกี่ยวข้อง
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === postId
+            ? { ...post, isLiked: response.data.isLiked, likeCount: response.data.likeCount }
+            : post
+        )
+      );
+    } catch (error) {
+      console.error('Error liking post:', error);
+      alert('Failed to like the post.');
+    }
   };
 
   return (
@@ -171,10 +186,12 @@ function Home() {
       {/* Posts Section */}
       <div className="posts">
         {isLoading ? (
-          Array(8).fill(null).map((_, index) => <PostSkeleton key={index} />)
+          Array(8)
+            .fill(null)
+            .map((_, index) => <PostSkeleton key={index} />)
         ) : posts.length > 0 ? (
           posts.map((post) => (
-            <Link to={`/posts/${post.id}`} key={post.id} className="post">
+            <div key={post.id} className="post">
               <div className="post-image">
                 <img src={post.fileUrls[0] || 'placeholder.png'} alt="Post" />
               </div>
@@ -187,16 +204,16 @@ function Home() {
                 </div>
                 <p className="post-description">{post.description}</p>
                 <div className="post-footer">
-                  <button 
-                    className={`like-button ${likedPosts[post.id] ? 'liked' : ''}`}
-                    onClick={(e) => handleLike(e, post.id)}
+                  <button
+                    className={`like-button ${post.isLiked ? 'liked' : ''}`}
+                    onClick={() => handleLike(post.id)}
                   >
-                    <i className={`fa-${likedPosts[post.id] ? 'solid' : 'regular'} fa-heart`}></i>
-                    <span>{post.likes || 0}</span>
+                    <i className={`fa-${post.isLiked ? 'solid' : 'regular'} fa-heart`}></i>
+                    <span>{post.likeCount}</span>
                   </button>
                 </div>
               </div>
-            </Link>
+            </div>
           ))
         ) : (
           <div className="no-results">

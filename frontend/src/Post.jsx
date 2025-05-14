@@ -38,9 +38,27 @@ function Post() {
     setZoomLevel(1); // รีเซ็ตการซูม
   };
 
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-    setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
+  const handleLike = async () => {
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    if (!storedUser) {
+      alert('Please log in to like posts.');
+      return;
+    }
+
+    try {
+      const response = await axios.post(`http://localhost:5000/api/home/posts/${id}/like`, {
+        userId: storedUser.id,
+      });
+
+      // อัปเดตสถานะการกดไลค์และจำนวนไลค์จากการตอบกลับของ backend
+      setIsLiked(response.data.isLiked);
+      setLikeCount(response.data.likeCount);
+      console.log('Like status:', response.data.isLiked);
+      console.log('Like count:', response.data.likeCount);
+    } catch (error) {
+      console.error('Error liking post:', error);
+      alert('Failed to like the post.');
+    }
   };
 
   const handleFollow = () => {
@@ -49,22 +67,30 @@ function Post() {
 
   useEffect(() => {
     const fetchPost = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5000/api/home/posts/${id}`);
-        setPost(response.data);
-        setComments(response.data.comments || []);
+        try {
+            const storedUser = JSON.parse(localStorage.getItem('user'));
+            const response = await axios.get(`http://localhost:5000/api/home/posts/${id}`, {
+                params: { userId: storedUser?.id }, // ส่ง userId ไปเพื่อให้ backend ตรวจสอบ
+            });
 
-        const storedUser = JSON.parse(localStorage.getItem('user'));
-        if (storedUser && storedUser.id === response.data.authorId) {
-          setIsOwner(true);
+            setPost(response.data);
+            setComments(response.data.comments || []);
+            setLikeCount(response.data.likeCount); // ตั้งค่า likeCount จาก backend
+            setIsLiked(response.data.isLiked); // ตั้งค่า isLiked จาก backend
+            console.log('Post data:', response.data);
+            console.log('Like status:', response.data.isLiked);
+            console.log('Like count:', response.data.likeCount);
+
+            if (storedUser && storedUser.id === response.data.authorId) {
+                setIsOwner(true);
+            }
+
+            setEditedTitle(response.data.title);
+            setEditedDescription(response.data.description);
+            setEditedImages(response.data.fileUrls);
+        } catch (error) {
+            console.error('Error fetching post:', error);
         }
-
-        setEditedTitle(response.data.title);
-        setEditedDescription(response.data.description);
-        setEditedImages(response.data.fileUrls);
-      } catch (error) {
-        console.error('Error fetching post:', error);
-      }
     };
 
     fetchPost();
