@@ -59,7 +59,7 @@ function Profile() {
   }, [user, id]);
 
   // Fetch saved posts
-  useEffect(() => {
+useEffect(() => {
     const fetchSavedPosts = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/user/saved-posts/${id}`);
@@ -69,8 +69,8 @@ function Profile() {
       }
     };
 
-    fetchSavedPosts();
-  }, [id]);
+  fetchSavedPosts();
+}, [id]);
 
   // Fetch tags from backend
   useEffect(() => {
@@ -335,31 +335,33 @@ function Profile() {
               <div className="post-content">
                 <h3 className="post-title">{post.title}</h3>
                 <div className="post-tags">
-                  {post.tags.map((tag, index) => (
-                    <span key={index} className="tag">#{tag.name}</span>
-                  ))}
+                  {post.tags && post.tags.length > 0 && post.tags.map((tag, index) => (
+            <span key={index} className="tag">#{tag.name}</span> // ใช้ tag.name แสดงชื่อ tag
+          ))}
                 </div>
                 <p className="post-description">{post.description}</p>
               </div>
             </Link>
           ))}
         {activeTab === 'saved' &&
-          savedPosts.map((post) => (
-            <Link to={`/posts/${post.id}`} key={post.id} className="post">
-              <div className="post-image">
-                <img src={post.fileUrls[0] || 'placeholder.png'} alt="Post" />
-              </div>
-              <div className="post-content">
-                <h3 className="post-title">{post.title}</h3>
-                <div className="post-tags">
-                  {post.tags.map((tag, index) => (
-                    <span key={index} className="tag">#{tag.name}</span>
-                  ))}
-                </div>
-                <p className="post-description">{post.description}</p>
-              </div>
-            </Link>
+  savedPosts.map((post) => (
+    <Link to={`/posts/${post.id}`} key={post.id} className="post">
+      <div className="post-image">
+        <img src={post.fileUrls?.[0] || 'placeholder.png'} alt="Post" />
+      </div>
+      <div className="post-content">
+        <h3 className="post-title">{post.title}</h3>
+        <div className="post-tags">
+          {/* แสดง tags ของโพสต์ */}
+          {post.tags && post.tags.length > 0 && post.tags.map((tag, index) => (
+            <span key={index} className="tag">#{tag.name}</span> // ใช้ tag.name แสดงชื่อ tag
           ))}
+        </div>
+        <p className="post-description">{post.description}</p>
+      </div>
+    </Link>
+  ))
+}
       </div>
     </div>
   );

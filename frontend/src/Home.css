@@ -356,6 +356,10 @@
     color: inherit;
 }
 
+body {
+  font-family: 'Rubik', sans-serif;
+}
+
 .post-link:hover {
     opacity: 0.9;
 }
