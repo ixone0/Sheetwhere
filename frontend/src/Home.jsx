@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Home.css';
 import NavigationBar from './components/NavigationBar';
@@ -14,6 +14,7 @@ function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
   const [likedPosts, setLikedPosts] = useState({});
+  const navigate = useNavigate();
 
   // Check if user is logged in
   useEffect(() => {
@@ -191,8 +192,7 @@ function Home() {
             .map((_, index) => <PostSkeleton key={index} />)
         ) : posts.length > 0 ? (
           posts.map((post) => (
-            <Link to={`/posts/${post.id}`} key={post.id} className="post-link">
-              <div key={post.id} className="post">
+              <div key={post.id} className="post" onClick={() => navigate(`/posts/${post.id}`)}>
                 <div className="post-image">
                   <img src={post.fileUrls[0] || 'placeholder.png'} alt="Post" />
                 </div>
@@ -207,7 +207,10 @@ function Home() {
                   <div className="post-footer">
                     <button
                       className={`like-button ${post.isLiked ? 'liked' : ''}`}
-                      onClick={() => handleLike(post.id)}
+                      onClick={(e) => {
+                        e.stopPropagation(); // ✅ ป้องกันไม่ให้คลิกไลค์ไปกระทบ layer บนสุด
+                        handleLike(post.id);
+                      }}
                     >
                       <i className={`fa-${post.isLiked ? 'solid' : 'regular'} fa-heart`}></i>
                       <span>{post.likeCount}</span>
@@ -215,7 +218,6 @@ function Home() {
                   </div>
                 </div>
               </div>
-            </Link>
             ))
         ) : (
           <div className="no-results">
