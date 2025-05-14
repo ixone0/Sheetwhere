@@ -116,7 +116,11 @@ const getSavedPosts = async (req, res) => {
     const user = await prisma.user.findUnique({
       where: { id },
       include: {
-        savedPosts: true, // ดึงโพสต์ที่บันทึกไว้
+        savedPosts: {
+          include: {
+            tags: true, // ดึงข้อมูล tags ของโพสต์ที่ถูกบันทึก
+          },
+        },
       },
     });
 
@@ -259,6 +263,29 @@ const deleteAccount = async (req, res) => {
     res.status(500).json({ error: 'Error deleting account.' });
   }
 };
+
+const getUserStats = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const posts = await prisma.post.findMany({
+      where: { authorId: userId },
+      select: {
+        likeCount: true, // ดึงเฉพาะจำนวนไลค์
+      },
+    });
+
+    const totalLikes = posts.reduce((sum, post) => sum + post.likeCount, 0); // รวมจำนวนไลค์ทั้งหมด
+
+    res.status(200).json({
+      posts: posts.length, // จำนวนโพสต์ทั้งหมด
+      likes: totalLikes,   // จำนวนไลค์ทั้งหมด
+    });
+  } catch (error) {
+    console.error('Error fetching user stats:', error);
+    res.status(500).json({ error: 'Error fetching user stats.' });
+  }
+};
   
 module.exports = { 
     registerUser, 
@@ -270,4 +297,5 @@ module.exports = {
     getUserSavedPosts,
     uploadProfileImage,
     deleteAccount,
+    getUserStats,
 };

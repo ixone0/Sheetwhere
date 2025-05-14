@@ -10,7 +10,6 @@ function Post() {
   const [isOwner, setIsOwner] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
-  const [isFollowing, setIsFollowing] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false); // สำหรับเปิด/ปิด Lightbox
   const [currentImageIndex, setCurrentImageIndex] = useState(0); // เก็บ index ของรูปภาพปัจจุบัน
   const [comment, setComment] = useState('');
@@ -59,10 +58,6 @@ function Post() {
       console.error('Error liking post:', error);
       alert('Failed to like the post.');
     }
-  };
-
-  const handleFollow = () => {
-    setIsFollowing(!isFollowing);
   };
 
   useEffect(() => {
@@ -362,32 +357,25 @@ function Post() {
             <div className="post-content">
                 <div className="post-header">
                     <div className="post-author-container">
-                        <div className="post-author">
-                            <img 
-                                src={post.author?.image || '/logo.jpg'} 
-                                alt={post.author?.name || 'Author'} 
-                                className="author-avatar"
-                            />
-                            <div className="author-info">
-                                <h3>{post.author?.name || 'Unknown User'}</h3>
-                                <span className="post-date">
-                                    {new Date(post.createdAt).toLocaleDateString('th-TH', {
-                                        year: 'numeric',
-                                        month: 'long',
-                                        day: 'numeric',
-                                        hour: '2-digit',
-                                        minute: '2-digit'
-                                    })}
-                                </span>
-                            </div>
+                      <div className="post-author">
+                        <img 
+                          src={post.author?.image || '/logo.jpg'} 
+                          alt={post.author?.name || 'Author'} 
+                          className="author-avatar"
+                        />
+                        <div className="author-info">
+                          <h3>{post.author?.name || 'Unknown User'}</h3>
+                          <span className="post-date">
+                            {new Date(post.createdAt).toLocaleDateString('th-TH', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </span>
                         </div>
-                        <button 
-                            onClick={handleFollow} 
-                            className={`follow-button ${isFollowing ? 'following' : ''}`}
-                        >
-                            <i className={`fa-solid ${isFollowing ? 'fa-user-check' : 'fa-user-plus'}`}></i>
-                            {isFollowing ? 'Following' : 'Follow'}
-                        </button>
+                      </div>
                     </div>
                 </div>
                 <div className="post-images">

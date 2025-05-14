@@ -19,11 +19,8 @@ function Profile() {
     description: '',
     fileUrls: [],
   });
-  const [isFollowing, setIsFollowing] = useState(false);
   const [stats, setStats] = useState({
     posts: 0,
-    followers: 0,
-    following: 0,
     likes: 0
   });
 
@@ -86,18 +83,22 @@ useEffect(() => {
     fetchTags();
   }, []);
 
-  // Temporary stats update for demonstration
+  // Fetch user stats
   useEffect(() => {
-    if (posts.length > 0) {
-      setStats(prev => ({
-        ...prev,
-        posts: posts.length,
-        followers: 120, // Dummy data
-        following: 85,  // Dummy data
-        likes: 450     // Dummy data
-      }));
-    }
-  }, [posts]);
+    const fetchUserStats = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/user/stats/${id}`);
+        setStats({
+          posts: response.data.posts,
+          likes: response.data.likes,
+        });
+      } catch (error) {
+        console.error('Error fetching user stats:', error);
+      }
+    };
+
+    fetchUserStats();
+  }, [id]);
 
   // Handle Add Post
   const handleAddPost = async (e) => {
@@ -185,11 +186,6 @@ useEffect(() => {
     document.getElementById('profile-image-upload').click();
   };
 
-  const handleFollow = () => {
-    setIsFollowing(!isFollowing);
-    // Backend integration will be added later
-  };
-
   return (
     <div className="profile">
       {/* Top Bar */}
@@ -234,14 +230,6 @@ useEffect(() => {
           <div className="stat-item">
             <span className="stat-number">{stats.posts}</span>
             <span className="stat-label">Posts</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-number">{stats.followers}</span>
-            <span className="stat-label">Followers</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-number">{stats.following}</span>
-            <span className="stat-label">Following</span>
           </div>
           <div className="stat-item">
             <span className="stat-number">{stats.likes}</span>
@@ -336,32 +324,31 @@ useEffect(() => {
                 <h3 className="post-title">{post.title}</h3>
                 <div className="post-tags">
                   {post.tags && post.tags.length > 0 && post.tags.map((tag, index) => (
-            <span key={index} className="tag">#{tag.name}</span> // ใช้ tag.name แสดงชื่อ tag
-          ))}
+                    <span key={index} className="tag">#{tag.name}</span>
+                  ))}
                 </div>
                 <p className="post-description">{post.description}</p>
               </div>
             </Link>
           ))}
         {activeTab === 'saved' &&
-  savedPosts.map((post) => (
-    <Link to={`/posts/${post.id}`} key={post.id} className="post">
-      <div className="post-image">
-        <img src={post.fileUrls?.[0] || 'placeholder.png'} alt="Post" />
-      </div>
-      <div className="post-content">
-        <h3 className="post-title">{post.title}</h3>
-        <div className="post-tags">
-          {/* แสดง tags ของโพสต์ */}
-          {post.tags && post.tags.length > 0 && post.tags.map((tag, index) => (
-            <span key={index} className="tag">#{tag.name}</span> // ใช้ tag.name แสดงชื่อ tag
-          ))}
-        </div>
-        <p className="post-description">{post.description}</p>
-      </div>
-    </Link>
-  ))
-}
+          savedPosts.map((post) => (
+            <Link to={`/posts/${post.id}`} key={post.id} className="post">
+              <div className="post-image">
+                <img src={post.fileUrls?.[0] || 'placeholder.png'} alt="Post" />
+              </div>
+              <div className="post-content">
+                <h3 className="post-title">{post.title}</h3>
+                <div className="post-tags">
+                  {post.tags && post.tags.length > 0 && post.tags.map((tag, index) => (
+                    <span key={index} className="tag">#{tag.name}</span>
+                  ))}
+                </div>
+                <p className="post-description">{post.description}</p>
+              </div>
+            </Link>
+          ))
+        }
       </div>
     </div>
   );

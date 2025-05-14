@@ -14,5 +14,6 @@ router.get('/posts/:userId', userController.getUserPosts);
 router.get('/saved-posts/:id', userController.getSavedPosts);
 router.post('/upload-profile-image/:id', upload.single('image'), userController.uploadProfileImage);
 router.delete('/delete-account/:id', userController.deleteAccount);
+router.get('/stats/:userId', userController.getUserStats);
 
 module.exports = router;

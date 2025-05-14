@@ -139,11 +139,19 @@ const getPostById = async (req, res) => {
               select: {
                 id: true,
                 name: true,
+                image: true, // เพิ่ม image หากต้องการแสดงรูปโปรไฟล์
               },
             },
           },
         },
-        likedBy: true, // ดึงข้อมูลผู้ใช้ที่กดไลค์โพสต์นี้
+        likedBy: true,
+        author: { // เพิ่ม author เพื่อดึงข้อมูลผู้โพสต์
+          select: {
+            id: true,
+            name: true,
+            image: true, // เพิ่ม image หากต้องการ
+          },
+        },
       },
     });
 
@@ -151,13 +159,12 @@ const getPostById = async (req, res) => {
       return res.status(404).json({ error: 'Post not found' });
     }
 
-    // ตรวจสอบว่าผู้ใช้คนนี้กดไลค์โพสต์นี้หรือยัง
     const isLiked = post.likedBy.some((user) => user.id === userId);
 
     res.status(200).json({
       ...post,
-      isLiked, // ส่งสถานะการกดไลค์กลับไป
-      likeCount: post.likeCount, // ส่งจำนวนไลค์กลับไป
+      isLiked,
+      likeCount: post.likeCount,
     });
   } catch (error) {
     console.error('Error fetching post:', error);
