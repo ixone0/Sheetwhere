@@ -191,30 +191,32 @@ function Home() {
             .map((_, index) => <PostSkeleton key={index} />)
         ) : posts.length > 0 ? (
           posts.map((post) => (
-            <div key={post.id} className="post">
-              <div className="post-image">
-                <img src={post.fileUrls[0] || 'placeholder.png'} alt="Post" />
-              </div>
-              <div className="post-content">
-                <h3 className="post-title">{post.title}</h3>
-                <div className="post-tags">
-                  {post.tags.map((tag, index) => (
-                    <span key={index} className="tag">#{tag.name}</span>
-                  ))}
+            <Link to={`/posts/${post.id}`} key={post.id} className="post-link">
+              <div key={post.id} className="post">
+                <div className="post-image">
+                  <img src={post.fileUrls[0] || 'placeholder.png'} alt="Post" />
                 </div>
-                <p className="post-description">{post.description}</p>
-                <div className="post-footer">
-                  <button
-                    className={`like-button ${post.isLiked ? 'liked' : ''}`}
-                    onClick={() => handleLike(post.id)}
-                  >
-                    <i className={`fa-${post.isLiked ? 'solid' : 'regular'} fa-heart`}></i>
-                    <span>{post.likeCount}</span>
-                  </button>
+                <div className="post-content">
+                  <h3 className="post-title">{post.title}</h3>
+                  <div className="post-tags">
+                    {post.tags.map((tag, index) => (
+                      <span key={index} className="tag">#{tag.name}</span>
+                    ))}
+                  </div>
+                  <p className="post-description">{post.description}</p>
+                  <div className="post-footer">
+                    <button
+                      className={`like-button ${post.isLiked ? 'liked' : ''}`}
+                      onClick={() => handleLike(post.id)}
+                    >
+                      <i className={`fa-${post.isLiked ? 'solid' : 'regular'} fa-heart`}></i>
+                      <span>{post.likeCount}</span>
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
+            </Link>
+            ))
         ) : (
           <div className="no-results">
             <h3>No posts found</h3>
