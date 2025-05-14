@@ -82,7 +82,29 @@ useEffect(() => {
 
     fetchTags();
   }, []);
+  const handleAddPost = async (e) => {
+      e.preventDefault();
+      try {
+        const response = await axios.post('http://localhost:5000/api/home/posts', {
+          ...newPost,
+          authorId: user.id,
+        });
 
+        // เพิ่มโพสต์ใหม่ใน state
+        setPosts([...posts, response.data]);
+
+        // Fetch จำนวนโพสต์และไลค์ใหม่
+        fetchUserStats();
+
+        // ปิดฟอร์มและรีเซ็ตค่า
+        setShowAddPostForm(false);
+        setNewPost({ title: '', tags: '', description: '', fileUrls: [] });
+        alert('Post added successfully!');
+      } catch (error) {
+        console.error('Error creating post:', error);
+        alert('Failed to create post.');
+      }
+    };
   // Fetch user stats
   useEffect(() => {
     const fetchUserStats = async () => {
@@ -100,21 +122,20 @@ useEffect(() => {
     fetchUserStats();
   }, [id]);
 
-  // Handle Add Post
-  const handleAddPost = async (e) => {
-    e.preventDefault();
+  const fetchUserStats = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/api/home/posts', {
-        ...newPost,
-        authorId: user.id,
+      const response = await axios.get(`http://localhost:5000/api/user/stats/${id}`);
+      setStats({
+        posts: response.data.posts,
+        likes: response.data.likes,
       });
-      setPosts([...posts, response.data]); // Add new post to the list
-      setShowAddPostForm(false); // Close the form
-      setNewPost({ title: '', tags: '', description: '', fileUrls: [] }); // Reset form
     } catch (error) {
-      console.error('Error creating post:', error);
+      console.error('Error fetching user stats:', error);
     }
   };
+
+  // Handle Add Post
+  
 
   const handleImageUpload = async (e) => {
     const files = e.target.files;
